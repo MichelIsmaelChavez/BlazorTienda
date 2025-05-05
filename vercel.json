@@ -6,18 +6,18 @@
       "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/_framework/(.*)",
-      "dest": "/_framework/$1"
+      "source": "/_framework/(.*)",
+      "destination": "/_framework/$1"
     },
     {
-      "src": "/_blazor/(.*)",
-      "dest": "/_blazor/$1"
+      "source": "/_blazor/(.*)",
+      "destination": "/_blazor/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
