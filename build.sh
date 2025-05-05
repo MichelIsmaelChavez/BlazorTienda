@@ -13,7 +13,7 @@ apt-get install -y dotnet-sdk-9.0
 dotnet restore
 dotnet publish -c Release -o wwwroot
 
-# Mover archivos necesarios
+# Asegurarse de que los archivos necesarios estén en el lugar correcto
 cp -r wwwroot/_framework wwwroot/
 cp -r wwwroot/_blazor wwwroot/
 cp wwwroot/index.html wwwroot/ 

@@ -8,31 +8,8 @@
   ],
   "rewrites": [
     {
-      "source": "/_framework/(.*)",
-      "destination": "/_framework/$1"
-    },
-    {
-      "source": "/_blazor/(.*)",
-      "destination": "/_blazor/$1"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https:; img-src 'self' data: https:;"
-        }
-      ]
     }
   ]
 } 
