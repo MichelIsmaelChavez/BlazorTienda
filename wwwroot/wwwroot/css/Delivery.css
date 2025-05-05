@@ -1,0 +1,86 @@
+﻿/* 🃏 Card moderna */
+.card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 1rem; /* redondeo más suave */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* sombra ligera */
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+    .card:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* más sombra al pasar el mouse */
+    }
+
+/* 📥 Inputs y selects */
+input.form-control, select.form-select {
+    border-radius: 0.75rem; /* rounded-3 más personalizado */
+    padding: 0.6rem 1rem;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease;
+}
+
+    input.form-control:focus, select.form-select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+/* 🎯 Botones generales */
+button.btn {
+    border-radius: 0.75rem; /* botones más suaves */
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease-in-out;
+}
+
+/* 🎯 Botón Editar */
+button.btn-outline-primary {
+    border: 2px solid #0d6efd;
+    color: #0d6efd;
+    background-color: transparent;
+}
+
+    button.btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: #fff;
+    }
+
+/* 🎯 Botón Eliminar */
+button.btn-outline-danger {
+    border: 2px solid #dc3545;
+    color: #dc3545;
+    background-color: transparent;
+}
+
+    button.btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+/* 🗂️ Tablas */
+.table-hover tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* 🏷️ Badges Estados */
+.badge {
+    font-size: 0.85rem;
+    padding: 0.45em 0.65em;
+    border-radius: 0.5rem;
+}
+
+/* Animación suave de fade-in */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Aplica la animación al Toast */
+.toast.show {
+    animation: fadeInUp 0.6s ease;
+}

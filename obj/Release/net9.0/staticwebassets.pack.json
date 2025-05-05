@@ -1,0 +1,449 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\bin\\Release\\net9.0\\wwwroot\\_framework\\blazor.webassembly.js",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\obj\\Release\\net9.0\\scopedcss\\bundle\\BlazorTienda.styles.css",
+      "PackagePath": "staticwebassets\\BlazorTienda.styles.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\css\\Delivery.css",
+      "PackagePath": "staticwebassets\\css\\Delivery.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\css\\Entregas.css",
+      "PackagePath": "staticwebassets\\css\\Entregas.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\css\\Menu.css",
+      "PackagePath": "staticwebassets\\css\\Menu.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\css\\Ofertas.css",
+      "PackagePath": "staticwebassets\\css\\Ofertas.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\css\\Producto.css",
+      "PackagePath": "staticwebassets\\css\\Producto.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\css\\categoria.css",
+      "PackagePath": "staticwebassets\\css\\categoria.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\css\\chat.css",
+      "PackagePath": "staticwebassets\\css\\chat.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\css\\historialcompras.css",
+      "PackagePath": "staticwebassets\\css\\historialcompras.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\css\\layout.css",
+      "PackagePath": "staticwebassets\\css\\layout.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\css\\login.css",
+      "PackagePath": "staticwebassets\\css\\login.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\css\\registro.css",
+      "PackagePath": "staticwebassets\\css\\registro.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\css\\reportedelivery.css",
+      "PackagePath": "staticwebassets\\css\\reportedelivery.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\css\\site.css",
+      "PackagePath": "staticwebassets\\css\\site.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\icon-192.png",
+      "PackagePath": "staticwebassets\\icon-192.png"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\icon-512.png",
+      "PackagePath": "staticwebassets\\icon-512.png"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\images\\logox.png",
+      "PackagePath": "staticwebassets\\images\\logox.png"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\images\\pikachu.png",
+      "PackagePath": "staticwebassets\\images\\pikachu.png"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\images\\promos\\promo1.jpg",
+      "PackagePath": "staticwebassets\\images\\promos\\promo1.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\images\\promos\\promo2.jpg",
+      "PackagePath": "staticwebassets\\images\\promos\\promo2.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\images\\promos\\promo3.jpg",
+      "PackagePath": "staticwebassets\\images\\promos\\promo3.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\Electrodomésticos.jpg",
+      "PackagePath": "staticwebassets\\img\\Electrodomésticos.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\Moto.jpg",
+      "PackagePath": "staticwebassets\\img\\Moto.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\Ropa.jpg",
+      "PackagePath": "staticwebassets\\img\\Ropa.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\Tecnología.jpg",
+      "PackagePath": "staticwebassets\\img\\Tecnología.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\auriculares.jpg",
+      "PackagePath": "staticwebassets\\img\\auriculares.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\campera.jpg",
+      "PackagePath": "staticwebassets\\img\\campera.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\casco.jpg",
+      "PackagePath": "staticwebassets\\img\\casco.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\escritorio.jpg",
+      "PackagePath": "staticwebassets\\img\\escritorio.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\guantes.jpg",
+      "PackagePath": "staticwebassets\\img\\guantes.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\laptop.jpg",
+      "PackagePath": "staticwebassets\\img\\laptop.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\microondas.jpg",
+      "PackagePath": "staticwebassets\\img\\microondas.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\ps5.jpg",
+      "PackagePath": "staticwebassets\\img\\ps5.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\refrigerador.jpg",
+      "PackagePath": "staticwebassets\\img\\refrigerador.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\sillon.jpg",
+      "PackagePath": "staticwebassets\\img\\sillon.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\smartphone.jpg",
+      "PackagePath": "staticwebassets\\img\\smartphone.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\switch.jpg",
+      "PackagePath": "staticwebassets\\img\\switch.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\tablet.jpg",
+      "PackagePath": "staticwebassets\\img\\tablet.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\img\\zapatillas.jpg",
+      "PackagePath": "staticwebassets\\img\\zapatillas.jpg"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\js\\Entrega.js",
+      "PackagePath": "staticwebassets\\js\\Entrega.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\js\\camara.js",
+      "PackagePath": "staticwebassets\\js\\camara.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\js\\cliente.js",
+      "PackagePath": "staticwebassets\\js\\cliente.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\js\\dashboard.js",
+      "PackagePath": "staticwebassets\\js\\dashboard.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\js\\exporter.js",
+      "PackagePath": "staticwebassets\\js\\exporter.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\js\\mapa.js",
+      "PackagePath": "staticwebassets\\js\\mapa.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\js\\mapaEntrega.js",
+      "PackagePath": "staticwebassets\\js\\mapaEntrega.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\manifest.webmanifest",
+      "PackagePath": "staticwebassets\\manifest.webmanifest"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\models.rar",
+      "PackagePath": "staticwebassets\\models.rar"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\models\\face_landmark_68_model-shard1",
+      "PackagePath": "staticwebassets\\models"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\models\\face_landmark_68_model-weights_manifest.json",
+      "PackagePath": "staticwebassets\\models\\face_landmark_68_model-weights_manifest.json"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\models\\face_recognition_model-shard1",
+      "PackagePath": "staticwebassets\\models"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\models\\face_recognition_model-shard2",
+      "PackagePath": "staticwebassets\\models"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\models\\face_recognition_model-weights_manifest.json",
+      "PackagePath": "staticwebassets\\models\\face_recognition_model-weights_manifest.json"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\models\\ssd_mobilenetv1_model-shard1",
+      "PackagePath": "staticwebassets\\models"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\models\\ssd_mobilenetv1_model-shard2",
+      "PackagePath": "staticwebassets\\models"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\models\\ssd_mobilenetv1_model-weights_manifest.json",
+      "PackagePath": "staticwebassets\\models\\ssd_mobilenetv1_model-weights_manifest.json"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\sample-data\\weather.json",
+      "PackagePath": "staticwebassets\\sample-data\\weather.json"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\scripts\\reconocimiento.js",
+      "PackagePath": "staticwebassets\\scripts\\reconocimiento.js"
+    },
+    {
+      "Id": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\wwwroot\\sounds\\notification.mp3",
+      "PackagePath": "staticwebassets\\sounds\\notification.mp3"
+    },
+    {
+      "Id": "obj\\Release\\net9.0\\staticwebassets\\msbuild.BlazorTienda.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Release\\net9.0\\staticwebassets\\msbuild.BlazorTienda.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Release\\net9.0\\staticwebassets\\msbuild.build.BlazorTienda.props",
+      "PackagePath": "build\\BlazorTienda.props"
+    },
+    {
+      "Id": "obj\\Release\\net9.0\\staticwebassets\\msbuild.buildMultiTargeting.BlazorTienda.props",
+      "PackagePath": "buildMultiTargeting\\BlazorTienda.props"
+    },
+    {
+      "Id": "obj\\Release\\net9.0\\staticwebassets\\msbuild.buildTransitive.BlazorTienda.props",
+      "PackagePath": "buildTransitive\\BlazorTienda.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

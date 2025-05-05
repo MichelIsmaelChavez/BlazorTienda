@@ -1,0 +1,8 @@
+﻿.custom-link {
+    transition: background-color 0.2s ease;
+}
+
+    .custom-link:hover {
+        background-color: #f8f9fa;
+        border-radius: 0.375rem;
+    }

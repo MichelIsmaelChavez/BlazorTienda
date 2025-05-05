@@ -1,0 +1,3 @@
+C:\Users\Usuario\Desktop\ProyectosU\Nueva carpeta\BlazorTiendaV18\BlazorTienda\BlazorTienda\wwwroot\staticwebapp.config.json
+C:\Users\Usuario\Desktop\ProyectosU\Nueva carpeta\BlazorTiendaV18\BlazorTienda\BlazorTienda\wwwroot\vercel.json
+C:\Users\Usuario\Desktop\ProyectosU\Nueva carpeta\BlazorTiendaV18\BlazorTienda\BlazorTienda\wwwroot\web.config

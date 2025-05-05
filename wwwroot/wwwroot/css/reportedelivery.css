@@ -1,0 +1,136 @@
+/* Estilos para el reporte de delivery */
+.delivery-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.delivery-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.delivery-card .card-body {
+    padding: 1.5rem;
+}
+
+.delivery-card .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.delivery-card .info-label {
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.delivery-card .info-value {
+    color: #2c3e50;
+}
+
+.delivery-card .map-container {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.delivery-card .btn-avanzar {
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.delivery-card .btn-avanzar:hover {
+    transform: scale(1.02);
+}
+
+/* Estilos para el estado de la entrega */
+.estado-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.estado-pendiente {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+.estado-preparacion {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.estado-camino {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.estado-entregado {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* Estilos para el historial de estados */
+.historial-estados {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}
+
+.historial-estados .historial-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.historial-estados .historial-item:last-child {
+    border-bottom: none;
+}
+
+/* Estilos para el mapa */
+.mapa-ruta {
+    height: 250px;
+    border-radius: 10px;
+    margin: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Estilos para el contenedor principal */
+.reporte-container {
+    padding: 2rem 0;
+}
+
+.reporte-header {
+    margin-bottom: 2rem;
+}
+
+.reporte-header h2 {
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+/* Estilos para el mensaje de no entregas */
+.no-entregas {
+    padding: 2rem;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 15px;
+    margin: 2rem 0;
+}
+
+.no-entregas i {
+    font-size: 3rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.no-entregas p {
+    color: #6c757d;
+    font-size: 1.1rem;
+}

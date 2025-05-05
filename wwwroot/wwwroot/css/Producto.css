@@ -1,0 +1,13 @@
+﻿
+.object-fit-cover {
+    object-fit: cover;
+}
+
+.table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+

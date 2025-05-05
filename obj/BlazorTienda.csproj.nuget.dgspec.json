@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\PC\\Desktop\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\BlazorTienda.csproj": {}
+    "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\BlazorTienda.csproj": {}
   },
   "projects": {
-    "C:\\Users\\PC\\Desktop\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\BlazorTienda.csproj": {
+    "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\BlazorTienda.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\PC\\Desktop\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\BlazorTienda.csproj",
+        "projectUniqueName": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\BlazorTienda.csproj",
         "projectName": "BlazorTienda",
-        "projectPath": "C:\\Users\\PC\\Desktop\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\BlazorTienda.csproj",
-        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\PC\\Desktop\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\obj\\",
+        "projectPath": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\BlazorTienda.csproj",
+        "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Usuario\\Desktop\\ProyectosU\\Nueva carpeta\\BlazorTiendaV18\\BlazorTienda\\BlazorTienda\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,7 +26,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
