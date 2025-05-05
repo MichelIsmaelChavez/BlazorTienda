@@ -1,0 +1,254 @@
+﻿@page "/registro"
+@using BlazorTienda.Models
+@using BlazorTienda.Services
+@inject UsuarioService UsuarioService
+@inject NavigationManager Navigation
+
+@inject IJSRuntime JS
+@implements IDisposable
+
+<div class="min-vh-100 d-flex align-items-center bg-light py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-lg">
+                    <!-- Header con gradiente -->
+                    <div class="card-header bg-primary bg-gradient text-white py-4">
+                        <div class="d-flex flex-column align-items-center">
+                            <i class="bi bi-person-plus-fill fs-1 mb-3"></i>
+                            <h1 class="h3 mb-0">Crear Cuenta</h1>
+                            <p class="mb-0 opacity-75">Únete a nuestra plataforma</p>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5">
+                        <EditForm Model="nuevoUsuario" OnValidSubmit="RegistrarUsuario">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="alert alert-danger mb-4" />
+
+                            <!-- Sección Información Personal -->
+                            <div class="mb-5">
+                                <h3 class="h5 text-primary mb-4 border-bottom pb-2">
+                                    <i class="bi bi-person-lines-fill me-2"></i>Información Personal
+                                </h3>
+
+                                <div class="mb-3">
+                                    <label for="nombre" class="form-label fw-semibold">Nombre completo*</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                                        <InputText id="nombre" @bind-Value="nuevoUsuario.Nombre" @oninput="NombreCambiado"
+                                                   class="form-control form-control-lg" placeholder="Juan Pérez" />
+                                    </div>
+                                    <ValidationMessage For="@(() => nuevoUsuario.Nombre)" class="text-danger small" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="correo" class="form-label fw-semibold">Correo electrónico</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                                        <InputText id="correo" @bind-Value="nuevoUsuario.Correo"
+                                                   class="form-control form-control-lg" placeholder="Generado automáticamente" />
+                                    </div>
+                                    <ValidationMessage For="@(() => nuevoUsuario.Correo)" class="text-danger small" />
+                                    <small class="text-muted">Puedes usar el correo generado o ingresar uno personalizado</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="password" class="form-label fw-semibold">Contraseña*</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
+                                        <InputText id="password" @bind-Value="nuevoUsuario.Contrasena"
+                                                   class="form-control form-control-lg" type="password" placeholder="••••••••" />
+                                    </div>
+                                    <ValidationMessage For="@(() => nuevoUsuario.Contrasena)" class="text-danger small" />
+                                </div>
+                            </div>
+
+                            <!-- Sección Datos Adicionales -->
+                            <div class="mb-5">
+                                <h3 class="h5 text-primary mb-4 border-bottom pb-2">
+                                    <i class="bi bi-file-earmark-text-fill me-2"></i>Datos Adicionales
+                                </h3>
+
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Carnet de identidad</label>
+                                        <InputText class="form-control form-control-lg" @bind-Value="nuevoUsuario.DocumentoCliente"
+                                                   placeholder="Número de CI" />
+                                        <ValidationMessage For="@(() => nuevoUsuario.DocumentoCliente)" class="text-danger small" />
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Celular</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light">+591</span>
+                                            <InputText class="form-control form-control-lg" @bind-Value="nuevoUsuario.CelularCliente"
+                                                       placeholder="Ej: 71234567" />
+                                        </div>
+                                        <ValidationMessage For="@(() => nuevoUsuario.CelularCliente)" class="text-danger small" />
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Lugar de trabajo</label>
+                                        <InputText class="form-control form-control-lg" @bind-Value="nuevoUsuario.TrabajoCliente"
+                                                   placeholder="Empresa o negocio" />
+                                        <ValidationMessage For="@(() => nuevoUsuario.TrabajoCliente)" class="text-danger small" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sección Ubicación -->
+                            <div class="mb-5">
+                                <h3 class="h5 text-primary mb-4 border-bottom pb-2">
+                                    <i class="bi bi-geo-alt-fill me-2"></i>Ubicación
+                                </h3>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Selecciona tu ubicación en el mapa</label>
+                                    <div id="mapa" class="w-100 rounded-3 border" style="height: 250px;"></div>
+                                    <div class="mt-2 text-center text-muted small">
+                                        <i class="bi bi-geo-alt-fill"></i>
+                                        Lat: @(nuevoUsuario.Latitud.ToString("0.0000")) | Lng: @(nuevoUsuario.Longitud.ToString("0.0000"))
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sección Foto de Rostro -->
+                            <div class="mb-5">
+                                <h3 class="h5 text-primary mb-4 border-bottom pb-2">
+                                    <i class="bi bi-camera-fill me-2"></i>Foto de Rostro (Opcional)
+                                </h3>
+                                <div class="text-center">
+                                    <video id="videoCamRegistro" class="rounded-3 border border-2" width="320" height="240" autoplay muted></video>
+                                    <canvas id="canvasFoto" width="320" height="240" class="d-none"></canvas>
+
+                                    <div class="mt-3">
+                                        <button type="button" class="btn btn-outline-success btn-lg"
+                                                @onclick="@(() => JS.InvokeVoidAsync("capturarFotoYDescriptor", DotNetObjectReference.Create(this)))">
+                                            <i class="bi bi-camera me-2"></i>Capturar rostro
+                                        </button>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(mensajeErrorCamara))
+                                    {
+                                        <div class="alert alert-danger mt-3">@mensajeErrorCamara</div>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(nuevoUsuario.FotoRostro))
+                                    {
+                                        <div class="mt-3">
+                                            <img src="@nuevoUsuario.FotoRostro" class="rounded-circle border border-success border-2" width="100" height="100" />
+                                            <div class="text-success small mt-2">Rostro capturado</div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Botón de Registro -->
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg py-3 fw-bold">
+                                    <i class="bi bi-person-check-fill me-2"></i>Registrarse
+                                </button>
+                            </div>
+
+                            <!-- Enlace a Login -->
+                            <div class="text-center mt-4 text-muted">
+                                ¿Ya tienes cuenta? <a href="/login" class="text-decoration-none fw-semibold">Inicia sesión</a>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Usuario nuevoUsuario = new();
+    private DotNetObjectReference<Registro>? dotNetRef;
+    private string mensajeErrorCamara = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        nuevoUsuario.Rol = "Cliente";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetRef = DotNetObjectReference.Create(this);
+            await Task.Delay(100);
+            await JS.InvokeVoidAsync("initMapa", -17.7833, -63.1833, dotNetRef);
+            await JS.InvokeVoidAsync("initCamaraRegistro", dotNetRef);
+        }
+    }
+
+    private void NombreCambiado(ChangeEventArgs e)
+    {
+        nuevoUsuario.Nombre = e.Value?.ToString() ?? "";
+        GenerarCorreoAutomatico();
+    }
+
+    private void GenerarCorreoAutomatico()
+    {
+        if (!string.IsNullOrWhiteSpace(nuevoUsuario.Nombre))
+        {
+            var partes = nuevoUsuario.Nombre.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (partes.Length >= 2)
+            {
+                var nombre = partes[0].ToLower();
+                var inicialApellido = partes[1][0].ToString().ToLower();
+                nuevoUsuario.Correo = $"{nombre}{inicialApellido}@gmail.com";
+            }
+            else if (partes.Length == 1)
+            {
+                nuevoUsuario.Correo = $"{partes[0].ToLower()}@gmail.com";
+            }
+        }
+    }
+
+    [JSInvokable]
+    public void EstablecerUbicacion(double lat, double lng)
+    {
+        nuevoUsuario.Latitud = lat;
+        nuevoUsuario.Longitud = lng;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task GuardarRostro(string descriptor)
+    {
+        nuevoUsuario.FotoRostro = descriptor;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public Task MostrarErrorCamara(string mensaje)
+    {
+        mensajeErrorCamara = mensaje;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private async Task RegistrarUsuario()
+    {
+        try
+        {
+            await UsuarioService.AgregarUsuarioAsync(nuevoUsuario);
+            await Task.Delay(300);
+            Navigation.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            mensajeErrorCamara = "Error al registrar: " + ex.Message;
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        dotNetRef?.Dispose();
+        _ = JS.InvokeVoidAsync("detenerCamara");
+    }
+}
+

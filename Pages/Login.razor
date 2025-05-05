@@ -1,0 +1,243 @@
+﻿@page "/login"
+@using BlazorTienda.Models
+@using BlazorTienda.Services
+@inject UsuarioService UsuarioService
+@inject SesionService SesionService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@implements IDisposable
+
+<div class="login-wrapper d-flex justify-content-center align-items-center min-vh-100 bg-light">
+    <div class="card shadow-lg p-4" style="max-width: 500px; width: 100%; border-radius: 1rem;">
+        <div class="text-center mb-4">
+            <div class="icon-circle bg-primary text-white mb-2" style="width: 60px; height: 60px; line-height: 60px; border-radius: 50%;">
+                <i class="bi bi-shield-lock fs-4"></i>
+            </div>
+            <h3 class="fw-bold">Bienvenido</h3>
+            <p class="text-muted">Inicia sesión con tu cuenta</p>
+        </div>
+
+        @if (credencialesInvalidas)
+        {
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <div>Credenciales incorrectas. Por favor, intente nuevamente.</div>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(mensajeErrorCamara))
+        {
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <div>@mensajeErrorCamara</div>
+            </div>
+        }
+
+        <EditForm Model="login" OnValidSubmit="ValidarLogin">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+
+            <div class="mb-3">
+                <label class="form-label">Correo electrónico*</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <InputText class="form-control" @bind-Value="login.Correo" placeholder="correo@dominio.com" />
+                </div>
+                <ValidationMessage For="@(() => login.Correo)" class="text-danger small" />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Contraseña*</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <InputText type="password" class="form-control" @bind-Value="login.Contrasena" placeholder="••••••••" />
+                </div>
+                <ValidationMessage For="@(() => login.Contrasena)" class="text-danger small" />
+            </div>
+
+            <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Iniciar Sesión
+                </button>
+            </div>
+
+            <div class="text-center mb-4">
+                <hr class="my-4">
+                <p class="text-muted">O inicia sesión con tu rostro</p>
+                <video id="videoCamLogin" width="320" height="240" autoplay muted style="border: 2px solid #4e73df;"></video>
+                <div class="mt-3">
+                    <button class="btn btn-outline-primary" type="button" @onclick="LoginConRostro">
+                        <i class="bi bi-person-bounding-box"></i> Iniciar con rostro
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center small">
+                <a href="#" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
+                <div class="mt-2">
+                    <span class="text-muted">¿No tienes cuenta?</span>
+                    <a href="/registro" class="text-decoration-none ms-1">Regístrate</a>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private LoginRequest login = new();
+    private bool credencialesInvalidas = false;
+    private string mensajeErrorCamara = string.Empty;
+    private DotNetObjectReference<Login>? dotNetRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("initCamaraLogin", dotNetRef);
+        }
+    }
+
+    private async Task ValidarLogin()
+    {
+        credencialesInvalidas = false;
+        mensajeErrorCamara = string.Empty;
+
+        try
+        {
+            // Asegúrate de cargar los usuarios más actualizados
+            await UsuarioService.CargarUsuariosDesdeLocalStorage();
+
+            var exito = await SesionService.IniciarSesionAsync(
+                login.Correo,
+                login.Contrasena,
+                UsuarioService.Usuarios // este es el argumento que faltaba
+            );
+
+            if (exito)
+            {
+                Navigation.NavigateTo("/tienda");
+            }
+            else
+            {
+                credencialesInvalidas = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            mensajeErrorCamara = "Error al iniciar sesión: " + ex.Message;
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public async Task RostroReconocido(string correo)
+    {
+        try
+        {
+            var usuario = await UsuarioService.ObtenerUsuarioPorCorreoAsync(correo);
+
+            if (usuario != null)
+            {
+                await UsuarioService.CargarUsuariosDesdeLocalStorage();
+                await SesionService.IniciarSesionAsync(usuario.Correo, usuario.Contrasena, UsuarioService.Usuarios);
+                Navigation.NavigateTo("/tienda");
+            }
+            else
+            {
+                mensajeErrorCamara = "Usuario no encontrado por reconocimiento facial.";
+            }
+        }
+        catch (Exception ex)
+        {
+            mensajeErrorCamara = "Error al autenticar con rostro: " + ex.Message;
+        }
+
+        StateHasChanged();
+    }
+    
+
+    private async Task LoginConRostro()
+    {
+        mensajeErrorCamara = string.Empty;
+        StateHasChanged();
+
+        try
+        {
+            await JS.InvokeVoidAsync("reconocerRostro", DotNetObjectReference.Create(this));
+        }
+        catch (Exception ex)
+        {
+            mensajeErrorCamara = "Error al iniciar reconocimiento facial: " + ex.Message;
+            StateHasChanged();
+        }
+    }
+
+  
+
+    [JSInvokable]
+    public Task RostroNoReconocido()
+    {
+        mensajeErrorCamara = "No se reconoció tu rostro. Intenta nuevamente o usa tu correo y contraseña";
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public async Task<List<Usuario>> ObtenerRostrosRegistrados()
+    {
+        return await UsuarioService.ObtenerUsuariosConRostro();
+    }
+
+    [JSInvokable]
+    public Task MostrarErrorCamara(string mensaje)
+    {
+        mensajeErrorCamara = mensaje;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        dotNetRef?.Dispose();
+        _ = JS.InvokeVoidAsync("detenerCamaraLogin");
+    }
+
+    [JSInvokable]
+    public async Task ProcesarReconocimientoFacial(string fotoActual)
+    {
+        var usuariosConRostro = await UsuarioService.ObtenerUsuariosConRostro();
+        foreach (var usuario in usuariosConRostro)
+        {
+            if (await CompararImagenes(usuario.FotoRostro, fotoActual))
+            {
+                await SesionService.IniciarSesionAsync(usuario.Correo, usuario.Contrasena, UsuarioService.Usuarios);
+                Navigation.NavigateTo("/tienda");
+                return;
+            }
+        }
+        mensajeErrorCamara = "No se reconoció el rostro.";
+        StateHasChanged();
+    }
+
+    private Task<bool> CompararImagenes(string img1, string img2)
+    {
+        // Convierte ambas imágenes de base64 a bytes
+        var bytes1 = Convert.FromBase64String(img1.Replace("data:image/png;base64,", ""));
+        var bytes2 = Convert.FromBase64String(img2.Replace("data:image/png;base64,", ""));
+
+        // Compara byte a byte una parte (por ejemplo los primeros 500 bytes)
+        int match = 0;
+        for (int i = 0; i < Math.Min(500, Math.Min(bytes1.Length, bytes2.Length)); i++)
+        {
+            if (bytes1[i] == bytes2[i]) match++;
+        }
+
+        // Calcula porcentaje de similitud
+        double porcentaje = (double)match / 500 * 100;
+
+        return Task.FromResult(porcentaje >= 85); // Puedes ajustar este umbral
+    }
+
+}
+

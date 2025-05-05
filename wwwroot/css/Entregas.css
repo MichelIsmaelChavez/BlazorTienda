@@ -1,0 +1,221 @@
+﻿/* Tabla más amigable */
+.table-hover tbody tr:hover {
+    background-color: #f1f5f9;
+    transition: background-color 0.3s;
+}
+
+/* Selects de la tabla */
+select.form-select {
+    transition: background-color 0.3s, border-color 0.3s;
+    font-weight: 500;
+}
+
+/* Select dinámico por estado */
+.estado-pendiente {
+    background-color: #dee2e6;
+    color: #212529;
+}
+
+.estado-preparacion {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.estado-camino {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.estado-entregado {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* Botones más bonitos */
+.btn {
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Botón eliminar más intenso */
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+/* Botón editar más vistoso */
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+    .btn-primary:hover {
+        background-color: #0069d9;
+    }
+
+/**/
+.delivery-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-width: 320px;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .progress-step:hover:not(.active) .step-number {
+        background-color: #d1e7ff;
+        transform: scale(1.05);
+    }
+
+.step-number {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active .step-number {
+    background-color: #0d6efd;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+.progress-step.completed .step-number {
+    background-color: #198754;
+    color: white;
+}
+
+.step-name {
+    font-size: 0.7rem;
+    color: #6c757d;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70px;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active .step-name {
+    color: #0d6efd;
+    font-weight: bold;
+}
+
+.progress-step.completed .step-name {
+    color: #198754;
+}
+
+.progress-connector {
+    flex-grow: 1;
+    height: 2px;
+    background-color: #e9ecef;
+    position: relative;
+    top: -14px;
+    transition: all 0.3s ease;
+}
+
+    .progress-connector.active {
+        background-color: #198754;
+    }
+
+@@media (max-width: 1200px) {
+    .delivery-progress {
+        min-width: 280px;
+    }
+
+    .step-name {
+        font-size: 0.65rem;
+        max-width: 60px;
+    }
+}
+
+@@media (max-width: 992px) {
+    .delivery-progress {
+        flex-direction: column;
+        height: 160px;
+        min-width: 70px;
+    }
+
+    .progress-connector {
+        width: 2px;
+        height: 15px;
+        flex-grow: 0;
+        top: 0;
+    }
+
+    .progress-step {
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .step-number {
+        margin-bottom: 0;
+        margin-right: 8px;
+    }
+
+    .step-name {
+        text-align: left;
+        max-width: none;
+    }
+}
+
+
+/* Estilo para el contenedor del mapa */
+#mapa-entrega {
+    height: 500px;
+    width: 100%;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+/* Estilo para la ruta en el mapa */
+.ruta-entrega {
+    stroke-dasharray: 10, 10;
+    animation: dash 30s linear infinite;
+}
+
+@keyframes dash {
+    from {
+        stroke-dashoffset: 200;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Estilo para los controles del mapa */
+.leaflet-control {
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+}
+
+    .leaflet-control a {
+        color: #333;
+    }

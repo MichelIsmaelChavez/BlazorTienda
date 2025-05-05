@@ -1,0 +1,176 @@
+.compra-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 15px;
+    overflow: hidden;
+    height: 100%;
+    border: none;
+}
+
+.compra-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.compra-card .card-body {
+    padding: 1.5rem;
+}
+
+.compra-card .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.compra-card .badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    margin-bottom: 0.5rem;
+}
+
+.info-item i {
+    font-size: 1.1rem;
+}
+
+/* Estilos para el timeline */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: 0;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    margin-top: 0.25rem;
+}
+
+.timeline-content {
+    margin-left: 1.5rem;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.timeline-title {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.timeline-date {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Estilos para el modal */
+.modal-content {
+    border-radius: 15px;
+    border: none;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: none;
+    border-radius: 15px 15px 0 0;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: none;
+    border-radius: 0 0 15px 15px;
+}
+
+.table th {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.compra-card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Estilos para el historial de estados */
+.historial-estados {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}
+
+.historial-estados h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.historial-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 0.9rem;
+}
+
+.historial-item:last-child {
+    border-bottom: none;
+}
+
+.historial-item i {
+    color: #6c757d;
+}
+
+/* Estilos para las imágenes en la tabla */
+.table img.img-thumbnail {
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.table img.img-thumbnail:hover {
+    transform: scale(1.1);
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 0.75rem;
+}
+
+.table td:first-child {
+    padding-left: 1rem;
+}
+
+.table td:last-child {
+    padding-right: 1rem;
+} 

@@ -1,0 +1,355 @@
+﻿@page "/gestion-productos"
+@using BlazorTienda.Models
+@using BlazorTienda.Services
+@inject ProductoService ProductoService
+@inject CategoriaService CategoriaService
+@inject SesionService SesionService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold mb-0">
+            <i class="bi bi-box-seam me-2"></i> Gestionar Productos
+        </h2>
+        <div class="badge bg-primary rounded-pill fs-6">
+            @(productosFiltrados.Count) productos
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-5 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        @(enEdicion ? "Editar Producto" : "Agregar Nuevo Producto")
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="nuevoProducto" OnValidSubmit="GuardarProducto">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger small" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nombre del Producto</label>
+                            <InputText class="form-control" @bind-Value="nuevoProducto.Nombre"
+                                       placeholder="Ej: Laptop Lenovo IdeaPad" />
+                            <ValidationMessage For="@(() => nuevoProducto.Nombre)" class="text-danger small" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Descripción</label>
+                            <InputTextArea class="form-control" @bind-Value="nuevoProducto.Descripcion"
+                                           placeholder="Ej: Portátil con procesador Ryzen 5, 8GB RAM, SSD 512GB"
+                                           rows="3"></InputTextArea>
+                            <ValidationMessage For="@(() => nuevoProducto.Descripcion)" class="text-danger small" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Precio (Bs.)</label>
+                                <InputNumber class="form-control" @bind-Value="nuevoProducto.Precio"
+                                             placeholder="1499.99" />
+                                <ValidationMessage For="@(() => nuevoProducto.Precio)" class="text-danger small" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Stock disponible</label>
+                                <InputNumber class="form-control" @bind-Value="nuevoProducto.Stock"
+                                             placeholder="10" />
+                                <ValidationMessage For="@(() => nuevoProducto.Stock)" class="text-danger small" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Categoría</label>
+                            <InputSelect class="form-select" @bind-Value="nuevoProducto.Categoria">
+                                <option disabled value="">-- Selecciona una categoría --</option>
+                                @foreach (var cat in CategoriaService.Categorias)
+                                {
+                                    <option value="@cat.Nombre">@cat.Nombre</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => nuevoProducto.Categoria)" class="text-danger small" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="favoritoCheck"
+                                           @bind="nuevoProducto.EsFavorito" />
+                                    <label class="form-check-label" for="favoritoCheck">Producto destacado</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="ofertaCheck"
+                                           @bind="nuevoProducto.EnOferta" />
+                                    <label class="form-check-label" for="ofertaCheck">Marcar como oferta</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (nuevoProducto.EnOferta)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Precio de oferta (Bs.)</label>
+                                <InputNumber class="form-control" @bind-Value="nuevoProducto.PrecioOferta"
+                                             placeholder="1299.99" />
+                                <ValidationMessage For="@(() => nuevoProducto.PrecioOferta)" class="text-danger small" />
+                            </div>
+                        }
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Imagen del producto</label>
+                            <InputFile class="form-control" OnChange="SeleccionarImagen" />
+                            @if (imagenPreview != null)
+                            {
+                                <div class="mt-3 text-center">
+                                    <img src="@imagenPreview" class="img-thumbnail rounded-3 shadow-sm"
+                                         style="max-height: 200px; max-width: 100%;" />
+                                </div>
+                            }
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary px-4 py-2 flex-grow-1" type="submit">
+                                <i class="bi @(enEdicion ? "bi-arrow-repeat" : "bi-save") me-2"></i>
+                                @textoBoton
+                            </button>
+                            @if (enEdicion)
+                            {
+                                <button class="btn btn-outline-secondary px-4 py-2" type="button"
+                                        @onclick="CancelarEdicion">
+                                    <i class="bi bi-x-lg me-2"></i> Cancelar
+                                </button>
+                            }
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-list-ul me-2"></i> Lista de Productos
+                    </h5>
+                    <div class="search-box">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0"
+                                   placeholder="Buscar productos..."
+                                   @bind="textoBusqueda" @bind:event="oninput" />
+                            @if (!string.IsNullOrEmpty(textoBusqueda))
+                            {
+                                <button class="btn btn-outline-secondary" type="button"
+                                        @onclick="LimpiarBusqueda">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if (ProductoService.Productos.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead style="background-color: #007bff; color: white;">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th class="text-end">Precio</th>
+                                        <th class="text-center">Stock</th>
+                                        <th>Categoría</th>
+                                        <th class="text-center">Estado</th>
+                                        <th style="width: 120px;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var producto in productosFiltrados)
+                                    {
+                                        <tr class="align-middle">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="@producto.ImagenUrl" width="50" height="50"
+                                                         class="rounded-3 me-3 object-fit-cover" />
+                                                    <div>
+                                                        <div class="fw-semibold">@producto.Nombre</div>
+                                                        <small class="text-muted">@producto.Descripcion.Truncate(30)</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-end">
+                                                @if (producto.EnOferta)
+                                                {
+                                                    <span class="text-danger fw-bold">Bs. @producto.PrecioOferta.ToString("N2")</span>
+                                                    <div class="text-muted text-decoration-line-through small">
+                                                        Bs. @producto.Precio.ToString("N2")
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span>Bs. @producto.Precio.ToString("N2")</span>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge @(producto.Stock > 0 ? "bg-success" : "bg-danger")">
+                                                    @producto.Stock
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@producto.Categoria</span>
+                                            </td>
+                                            <td class="text-center">
+                                                @if (producto.EsFavorito)
+                                                {
+                                                    <i class="bi bi-star-fill text-warning" title="Producto destacado"></i>
+                                                }
+                                                @if (producto.EnOferta)
+                                                {
+                                                    <i class="bi bi-tag-fill text-danger ms-1" title="En oferta"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-2">
+                                                    <button class="btn btn-sm btn-outline-primary"
+                                                            @onclick="() => EditarProducto(producto)"
+                                                            title="Editar">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger"
+                                                            @onclick="() => ConfirmarEliminar(producto.Id)"
+                                                            title="Eliminar">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-box text-muted" style="font-size: 3rem;"></i>
+                            <h5 class="mt-3">No hay productos registrados</h5>
+                            <p class="text-muted">Agrega tu primer producto usando el formulario</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Producto nuevoProducto = new Producto();
+    private string? imagenPreview;
+    private bool enEdicion = false;
+    private string textoBoton => enEdicion ? "Actualizar" : "Guardar";
+    private string textoBusqueda = string.Empty;
+
+    private List<Producto> productosFiltrados => ProductoService.Productos
+        .Where(p => string.IsNullOrEmpty(textoBusqueda) ||
+                    p.Nombre.Contains(textoBusqueda, StringComparison.OrdinalIgnoreCase) ||
+                    p.Descripcion.Contains(textoBusqueda, StringComparison.OrdinalIgnoreCase) ||
+                    p.Categoria.Contains(textoBusqueda, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+
+    protected override void OnInitialized()
+    {
+        if (!SesionService.TieneAccesoAdmin())
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+
+    async Task SeleccionarImagen(InputFileChangeEventArgs e)
+    {
+        var archivo = e.File;
+        nuevoProducto.ImagenArchivo = archivo;
+
+        var buffer = new byte[archivo.Size];
+        await archivo.OpenReadStream().ReadAsync(buffer);
+
+        // Guarda solo la URL de la imagen (no el archivo completo)
+        imagenPreview = $"data:{archivo.ContentType};base64,{Convert.ToBase64String(buffer)}";
+        nuevoProducto.ImagenUrl = imagenPreview;
+    }
+
+
+    async Task GuardarProducto()
+    {
+        if (enEdicion)
+        {
+            await ProductoService.EditarProductoAsync(nuevoProducto);
+            MostrarToast("Producto actualizado correctamente", "success");
+            enEdicion = false;
+        }
+        else
+        {
+            await ProductoService.AgregarProductoAsync(nuevoProducto);
+            MostrarToast("Producto agregado correctamente", "success");
+        }
+
+        LimpiarFormulario();
+    }
+
+    void EditarProducto(Producto producto)
+    {
+        nuevoProducto = new Producto
+            {
+                Id = producto.Id,
+                Nombre = producto.Nombre,
+                Descripcion = producto.Descripcion,
+                Precio = producto.Precio,
+                Stock = producto.Stock,
+                Categoria = producto.Categoria,
+                ImagenUrl = producto.ImagenUrl,
+                EsFavorito = producto.EsFavorito,
+                EnOferta = producto.EnOferta,
+                PrecioOferta = producto.PrecioOferta
+            };
+        imagenPreview = producto.ImagenUrl;
+        enEdicion = true;
+    }
+
+    void CancelarEdicion()
+    {
+        LimpiarFormulario();
+    }
+
+    void LimpiarFormulario()
+    {
+        nuevoProducto = new Producto();
+        imagenPreview = null;
+        enEdicion = false;
+    }
+
+    void LimpiarBusqueda()
+    {
+        textoBusqueda = string.Empty;
+    }
+
+    async Task ConfirmarEliminar(int id)
+    {
+        bool confirm = await JS.InvokeAsync<bool>("confirm", "¿Estás seguro de eliminar este producto?");
+        if (confirm)
+        {
+            // Llamar al método asíncrono para eliminar el producto y guardar en localStorage
+            await ProductoService.EliminarProductoAsync(id);
+            MostrarToast("Producto eliminado correctamente", "danger");
+        }
+    }
+
+    void MostrarToast(string mensaje, string tipo)
+    {
+        // Implementación del toast como en ejemplos anteriores
+    }
+}

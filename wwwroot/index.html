@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BlazorTienda</title>
+    <base href="/" />
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+ 
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="BlazorTienda.styles.css" rel="stylesheet" />
+    <link href="manifest.webmanifest" rel="manifest" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+    <link href="css/historialcompras.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred. <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
+
+    <header>
+
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script src="js/cliente.js"></script>
+        <script src="js/Entrega.js"></script>
+    </header>
+    <!-- Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="js/mapa.js"></script>
+    <script src="js/camara.js"></script>
+    <script src="js/mapaEntrega.js"></script>
+
+    <script>
+        // Exponer funciones globalmente para Blazor
+        window.initCamara = initCamara;
+        window.capturarFoto = capturarFoto;
+        window.detenerCamara = detenerCamara;
+    </script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmarEliminacion() {
+            return Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                return result.isConfirmed;
+            });
+        }
+    </script>
+
+
+
+
+
+    <script src="js/dashboard.js"></script>
+    <!-- estilos personalizados -->
+    <link href="css/layout.css" rel="stylesheet" />
+    <link href="css/login.css" rel="stylesheet" />
+    <link href="css/registro.css" rel="stylesheet" />
+    <link href="css/Producto.css" rel="stylesheet" />
+    <link href="css/categoria.css" rel="stylesheet" />
+    <link href="css/Menu.css" rel="stylesheet" />
+    <link href="css/Ofertas.css" rel="stylesheet" />
+    <link href="css/Delivery.css" rel="stylesheet" />
+
+    <link href="css/Entregas.css" rel="stylesheet" />
+    <link href="css/reportedelivery.css" rel="stylesheet" />
+    <link href="css/chat.css" rel="stylesheet" />
+    <script src="js/exporter.js"></script>
+
+
+
+
+
+
+    <!-- jsPDF y factura -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        window.generarFacturaPDF = async (detalle) => {
+            const { jsPDF } = window.jspdf || await import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+            const doc = new jsPDF();
+
+            const logo = new Image();
+            logo.src = "images/logox.png";
+
+            logo.onload = () => {
+                // Logo arriba a la derecha
+                doc.addImage(logo, "PNG", 160, 10, 40, 20);
+
+                // Título
+                doc.setFontSize(18);
+                doc.setTextColor(33, 37, 41); // Gris oscuro
+                doc.text("Factura de Compra", 20, 30);
+
+                // Información del cliente
+                doc.setFontSize(11);
+                doc.text(`Fecha: ${detalle.fecha}`, 20, 45);
+                doc.text(`Cliente: ${detalle.cliente}`, 20, 51);
+                doc.text(`Ubicación: ${detalle.ubicacion}`, 20, 57);
+
+                // Separador
+                doc.setDrawColor(200, 200, 200); // Gris suave
+                doc.line(20, 65, 190, 65);
+
+                // Cabecera productos
+                let y = 75;
+                doc.setFontSize(10);
+                doc.setTextColor(100);
+                doc.text("Producto", 20, y);
+                doc.text("Precio", 90, y);
+                doc.text("Cantidad", 120, y);
+                doc.text("Subtotal", 160, y);
+
+                // Productos
+                y += 6;
+                doc.setTextColor(50);
+                detalle.items.forEach(i => {
+                    doc.text(i.nombre, 20, y);
+                    doc.text(`Bs. ${i.precio}`, 90, y);
+                    doc.text(`${i.cantidad}`, 120, y);
+                    doc.text(`Bs. ${i.subtotal}`, 160, y);
+                    y += 6;
+
+                    // Línea separadora
+                    doc.setDrawColor(230, 230, 230);
+                    doc.line(20, y - 3, 190, y - 3);
+                });
+
+                // Total
+                y += 10;
+                doc.setFontSize(14);
+                doc.setTextColor(0, 123, 255);
+                doc.text(`TOTAL: Bs. ${detalle.total}`, 140, y);
+
+                doc.save("Factura_Minimalista_BlazorTienda.pdf");
+            };
+        };
+    </script>
+
+
+    <!-- Librería de reconocimiento facial -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+    <!-- Tu script personalizado debe ir después -->
+    <script src="scripts/reconocimiento.js"></script>
+
+
+    <script>
+        window.iniciarCamaraPerfil = async function () {
+            setTimeout(async () => {
+                const video = document.getElementById('videoPerfil');
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                        video.srcObject = stream;
+                        video.play();
+                    } catch (err) {
+                        console.error("Error al acceder a la cámara:", err);
+                    }
+                }
+            }, 300);
+        };
+
+        window.capturarFotoPerfil = function () {
+            const video = document.getElementById('videoPerfil');
+            const canvas = document.getElementById('canvasPerfil');
+            const context = canvas.getContext('2d');
+            if (!video || !canvas || !context) return "";
+
+            canvas.width = video.videoWidth || 200;
+            canvas.height = video.videoHeight || 150;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/png');
+            console.log("📸 Capturada:", dataUrl.substring(0, 50)); // Debug
+            return dataUrl;
+        };
+
+
+        window.detenerCamaraPerfil = function () {
+            const video = document.getElementById('videoPerfil');
+            if (video && video.srcObject) {
+                const stream = video.srcObject;
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+                video.srcObject = null;
+            }
+        };
+    </script>
+
+    <script>
+        function playNotificationSound() {
+            const audio = new Audio('/sounds/notification.mp3');
+            audio.play().catch(e => console.log("Error al reproducir sonido:", e));
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        (function() {
+            try {
+                emailjs.init("PoSfurrTae1EX4TwV");
+                console.log("EmailJS inicializado correctamente");
+            } catch (error) {
+                console.error("Error al inicializar EmailJS:", error);
+            }
+        })();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components
+
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p>Página no encontrada.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
+    [Inject] private NavigationManager Navigation { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Establece la ruta inicial para que la aplicación cargue directamente en "/tienda"
+        Navigation.NavigateTo("/tienda", forceLoad: false);
+    }
+}
+

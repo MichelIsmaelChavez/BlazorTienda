@@ -1,0 +1,12 @@
+﻿@page "/logout"
+@using BlazorTienda.Services
+@inject SesionService SesionService
+@inject NavigationManager Navigation
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await SesionService.CerrarSesionAsync();
+        Navigation.NavigateTo("/login", true);
+    }
+}

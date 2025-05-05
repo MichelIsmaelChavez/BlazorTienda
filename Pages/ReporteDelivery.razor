@@ -1,0 +1,335 @@
+﻿@page "/reporte-delivery"
+@using BlazorTienda.Models
+@using BlazorTienda.Services
+@inject DeliveryService DeliveryService
+@inject EntregaService EntregaService
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@using Blazored.LocalStorage
+@inject SesionService SesionService
+@inject IJSRuntime JS
+@inject UsuarioService UsuarioService
+
+<PageTitle>Mis Entregas</PageTitle>
+
+<link href="css/reportedelivery.css" rel="stylesheet" />
+
+<style>
+    .mapa-modal {
+        height: 500px;
+        width: 100%;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .producto-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .producto-item:last-child {
+        border-bottom: none;
+    }
+
+    .producto-imagen {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .producto-info {
+        flex: 1;
+    }
+
+    .producto-nombre {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .producto-detalle {
+        font-size: 0.875rem;
+        color: #666;
+    }
+
+    .producto-cantidad {
+        font-weight: 600;
+        color: #007bff;
+    }
+</style>
+
+<div class="container reporte-container">
+    <div class="reporte-header">
+        <h2 class="text-primary">
+            <i class="bi bi-truck me-2"></i>Mis Entregas Asignadas
+        </h2>
+    </div>
+
+    @if (Entregas.Count == 0)
+    {
+        <div class="no-entregas">
+            <i class="bi bi-info-circle"></i>
+            <p>No tienes entregas asignadas actualmente.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var entrega in Entregas)
+            {
+                <div class="col-md-6">
+                    <div class="card delivery-card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-person me-2"></i>@entrega.ClienteNombre
+                            </h5>
+                            
+                            <div class="mb-3">
+                                <span class="info-label">Dirección:</span>
+                                <span class="info-value">@entrega.DireccionEntrega</span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <span class="info-label">Total:</span>
+                                <span class="info-value">Bs. @entrega.Total.ToString("N2")</span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <span class="info-label">Tipo de Entrega:</span>
+                                <span class="info-value">@entrega.TipoEntrega</span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <span class="info-label">Estado:</span>
+                                <span class="estado-badge @GetEstadoCss(entrega.EstadoEntrega)">
+                                    @entrega.EstadoEntrega
+                                </span>
+                            </div>
+
+                            <!-- Sección de Productos -->
+                            <div class="mt-3">
+                                <h6 class="fw-bold mb-2">
+                                    <i class="bi bi-box-seam me-2"></i>Productos del Pedido
+                                </h6>
+                                <div class="border rounded-3 p-2">
+                                    @foreach (var producto in entrega.Productos)
+                                    {
+                                        <div class="producto-item">
+                                            <img src="@producto.ImagenUrl" 
+                                                 alt="@producto.Nombre" 
+                                                 class="producto-imagen" />
+                                            <div class="producto-info">
+                                                <div class="producto-nombre">@producto.Nombre</div>
+                                                <div class="producto-detalle">
+                                                    <span class="producto-cantidad">@producto.Cantidad x</span>
+                                                    Bs. @producto.PrecioUnitario.ToString("N2")
+                                                </div>
+                                            </div>
+                                            <div class="fw-bold">
+                                                Bs. @((producto.PrecioUnitario * producto.Cantidad).ToString("N2"))
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2 mt-3">
+                                <button class="btn btn-outline-primary w-100"
+                                        @onclick="() => MostrarRutaEntrega(entrega)">
+                                    <i class="bi bi-map me-2"></i>Ver Ruta
+                                </button>
+
+                                @if (entrega.EstadoEntrega != "Entregado")
+                                {
+                                    <button class="btn btn-primary w-100"
+                                            @onclick="() => AvanzarEstado(entrega)">
+                                        <i class="bi bi-arrow-right-circle me-2"></i>Avanzar Estado
+                                    </button>
+                                }
+                            </div>
+
+                            @if (entrega.HistorialEstados?.Any() == true)
+                            {
+                                <div class="historial-estados mt-3">
+                                    <h6 class="mb-3">Historial de Estados</h6>
+                                    @foreach (var estado in entrega.HistorialEstados)
+                                    {
+                                        <div class="historial-item">
+                                            <i class="bi bi-clock-history me-2"></i>@estado
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Modal para mostrar el mapa -->
+@if (entregaSeleccionada != null)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-map me-2"></i>Ruta de Entrega
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="CerrarModal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="mapa-modal" id="mapa-entrega"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CerrarModal">
+                        <i class="bi bi-x-circle me-2"></i>Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    private List<Entrega> Entregas = new();
+    private Entrega? entregaSeleccionada = null;
+    private readonly string[] EstadoPasos = new[] { "Pendiente", "En preparación", "En camino", "Entregado" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var todas = await EntregaService.ObtenerTodasAsync();
+
+        if (SesionService.UsuarioActual != null)
+        {
+            var usuario = SesionService.UsuarioActual;
+
+            if (SesionService.TieneAccesoAdmin())
+            {
+                Entregas = todas;
+            }
+            else if (usuario.Rol == "Delivery")
+            {
+                Entregas = todas
+                    .Where(e => e.DeliveryEmail == usuario.Correo)
+                    .ToList();
+            }
+        }
+    }
+
+    private async Task MostrarRutaEntrega(Entrega entrega)
+    {
+        try
+        {
+            // Mostrar el modal primero
+            entregaSeleccionada = entrega;
+            StateHasChanged();
+
+            // Esperar a que el modal se muestre y el DOM se actualice
+            await Task.Delay(500);
+
+            // Coordenadas de la tienda (punto de origen)
+            var origenLat = -17.7833; // Latitud de la tienda
+            var origenLng = -63.1667; // Longitud de la tienda
+
+            // Obtener el usuario del cliente para sus coordenadas
+            var cliente = await UsuarioService.ObtenerUsuarioPorCorreoAsync(entrega.ClienteEmail);
+            if (cliente == null)
+            {
+                await JS.InvokeVoidAsync("Swal.fire", 
+                    "Error", 
+                    "No se pudo encontrar la información del cliente", 
+                    "error");
+                return;
+            }
+
+            // Coordenadas del cliente (punto de destino)
+            var destinoLat = cliente.Latitud;
+            var destinoLng = cliente.Longitud;
+
+            // Verificar que las coordenadas del cliente sean válidas
+            if (destinoLat == 0 && destinoLng == 0)
+            {
+                await JS.InvokeVoidAsync("Swal.fire", 
+                    "Advertencia", 
+                    "El cliente no tiene una ubicación registrada en su perfil. Por favor, actualice la ubicación del cliente.", 
+                    "warning");
+                return;
+            }
+
+            Console.WriteLine($"Mostrando ruta desde tienda ({origenLat}, {origenLng}) hasta cliente ({destinoLat}, {destinoLng})");
+
+            // Llamar a la función del mapa
+            await JS.InvokeVoidAsync("mostrarRutaEntrega", 
+                origenLat, 
+                origenLng, 
+                destinoLat, 
+                destinoLng);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al mostrar la ruta: {ex.Message}");
+            await JS.InvokeVoidAsync("Swal.fire", "Error", $"Error al mostrar la ruta: {ex.Message}", "error");
+        }
+    }
+
+    private void CerrarModal()
+    {
+        entregaSeleccionada = null;
+        StateHasChanged();
+    }
+
+    private async Task AvanzarEstado(Entrega entrega)
+    {
+        switch (entrega.EstadoEntrega)
+        {
+            case "Pendiente":
+                entrega.EstadoEntrega = "En preparación";
+                break;
+            case "En preparación":
+                entrega.EstadoEntrega = "En camino";
+                break;
+            case "En camino":
+                entrega.EstadoEntrega = "Entregado";
+                break;
+            case "Entregado":
+                return;
+        }
+
+        entrega.HistorialEstados ??= new List<string>();
+        entrega.HistorialEstados.Add($"→ {entrega.EstadoEntrega} ({DateTime.Now:dd/MM/yyyy HH:mm})");
+
+        await EntregaService.ActualizarAsync(entrega);
+
+        if (entrega.EstadoEntrega == "Entregado")
+        {
+            var delivery = await DeliveryService.ObtenerPorIdAsync(entrega.DeliveryId);
+            if (delivery != null)
+            {
+                delivery.Estado = "Disponible";
+                await DeliveryService.ActualizarAsync(delivery);
+            }
+        }
+
+        await LocalStorage.SetItemAsync("misEntregas", Entregas);
+
+        await JS.InvokeVoidAsync("blazorHelpers.showToast", "success", "Estado actualizado",
+            $"Entrega #{entrega.Id} ahora está en estado: {entrega.EstadoEntrega}");
+
+        StateHasChanged();
+    }
+
+    private string GetEstadoCss(string estado) => estado switch
+    {
+        "Pendiente" => "estado-pendiente",
+        "En preparación" => "estado-preparacion",
+        "En camino" => "estado-camino",
+        "Entregado" => "estado-entregado",
+        _ => "estado-pendiente"
+    };
+}

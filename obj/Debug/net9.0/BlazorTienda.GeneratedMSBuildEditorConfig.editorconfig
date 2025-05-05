@@ -1,0 +1,125 @@
+is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
+build_property.TargetFramework = net9.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = browser
+build_property.RootNamespace = BlazorTienda
+build_property.RootNamespace = BlazorTienda
+build_property.ProjectDir = C:\Users\PC\Desktop\BlazorTiendaV18\BlazorTienda\BlazorTienda\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = false
+build_property.RazorLangVersion = 9.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\PC\Desktop\BlazorTiendaV18\BlazorTienda\BlazorTienda
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 9.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Components/AyudaFlotante.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBeXVkYUZsb3RhbnRlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/AdminPagos.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYWdvcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/AdminProductos.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5Qcm9kdWN0b3MucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/AdminSolicitudes.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5Tb2xpY2l0dWRlcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/Carrito.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2Fycml0by5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/Categorias.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcmlhcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/Clientes.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2xpZW50ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/Contacto.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29udGFjdG8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/Dashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGFzaGJvYXJkLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/GestionDeliverys.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR2VzdGlvbkRlbGl2ZXJ5cy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/GestionEntregas.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR2VzdGlvbkVudHJlZ2FzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/HistorialCompras.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSGlzdG9yaWFsQ29tcHJhcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/Logout.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9nb3V0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/MisPagos.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTWlzUGFnb3MucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/Ofertas.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT2ZlcnRhcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/Registro.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVnaXN0cm8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/ReporteDelivery.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVwb3J0ZURlbGl2ZXJ5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/Tienda.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVGllbmRhLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/Usuarios.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXN1YXJpb3MucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Pages/VerPerfil.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVmVyUGVyZmlsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-umf85tq3ta
+
+[C:/Users/PC/Desktop/BlazorTiendaV18/BlazorTienda/BlazorTienda/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-4k2wgmmsn1

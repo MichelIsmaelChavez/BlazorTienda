@@ -1,0 +1,117 @@
+﻿    @using BlazorTienda.Services
+    @inject SesionService SesionService
+    @inject NavigationManager Navigation
+    @inject ProductoService ProductoService
+
+    <div class="@NavMenuCssClass nav-scrollable d-flex flex-column bg-white text-dark shadow-sm px-3 pt-4" style="min-height: 100vh; width: 260px;" @onclick="ToggleNavMenu">
+        <!-- Logo y Bienvenida -->
+        <div class="text-center mb-4">
+            <h5 class="fw-bold text-primary">📦 BlazorTienda</h5>
+            @if (SesionService.EstaAutenticado)
+            {
+                <p class="text-muted mb-1">Hola, <strong>@SesionService.UsuarioActual?.Nombre</strong></p>
+                <NavLink href="/logout" class="btn btn-sm btn-outline-danger w-100">Cerrar sesión</NavLink>
+            }
+            else
+            {
+                <NavLink href="/login" class="btn btn-sm btn-primary w-100">Iniciar Sesión</NavLink>
+            }
+        </div>
+
+        <hr />
+
+        <!-- Menú principal -->
+        <nav class="nav flex-column gap-2">
+
+            <!-- Comprar a Cuotita dropdown -->
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-white text-center" href="#" id="cuotitaDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-hand-holding-usd fs-4"></i><br />
+                    <strong>Cuotitas</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cuotitaDropdown">
+                    <li>
+                        <NavLink class="dropdown-item" href="/solicitar-cuotas">
+                            <i class="bi bi-pencil-square me-2"></i> Solicitar Cuotas
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink class="dropdown-item" href="/pago-cuotas">
+                            <i class="bi bi-cash-coin me-2"></i> Pago de Cuotas
+                        </NavLink>
+                    </li>
+                </ul>
+            </li>
+
+            <NavLink href="/tienda" class="nav-link custom-link">
+                🛍️ Tienda
+            </NavLink>
+
+            <NavLink href="/carrito" class="nav-link custom-link">
+                🛒 Carrito
+            </NavLink>
+            <NavLink href="/ver-perfil" class="nav-link custom-link">
+                👤 Mi Perfil
+            </NavLink>
+
+        @if (SesionService.EstaAutenticado && SesionService.TieneAccesoAdmin())
+        {
+            <hr />
+            <p class="fw-semibold text-uppercase text-muted small">ADMIN</p>
+
+            <NavLink href="/gestion-productos" class="nav-link custom-link">
+                🧰 Gestión de Productos
+            </NavLink>
+
+            <NavLink href="/categorias" class="nav-link custom-link">
+                📁 Categorías
+            </NavLink>
+
+            <NavLink href="/dashboard" class="nav-link custom-link">
+                📊 Dashboard
+            </NavLink>
+
+            <NavLink href="/usuarios" class="nav-link custom-link">
+                👥 Usuarios
+            </NavLink>
+
+            <NavLink href="/gestion-entregas" class="nav-link custom-link">
+                🚚 Gestión de Entregas
+            </NavLink>
+
+            <NavLink href="/gestion-deliverys" class="nav-link custom-link">
+                🚲 Gestión Deliverys
+            </NavLink>
+
+            <NavLink href="/registro" class="nav-link text-warning">
+                <span class="oi oi-person"></span> Registrarse
+            </NavLink>
+        }
+
+        @if (SesionService.EstaAutenticado && (
+        SesionService.UsuarioActual?.Rol == "Delivery" || SesionService.TieneAccesoAdmin()))
+
+        {
+            <hr />
+            <p class="fw-semibold text-uppercase text-muted small">DELIVERY</p>
+
+            <NavLink href="/reporte-delivery" class="nav-link custom-link">
+                📦 Mis Entregas Asignadas
+            </NavLink>
+        }
+
+        </nav>
+    </div>
+
+    @code {
+        private bool collapseNavMenu = true;
+        private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+        private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
+
+        private void LimpiarBusqueda()
+        {
+            ProductoService.TextoBusqueda = string.Empty;
+            Navigation.NavigateTo("/tienda");
+        }
+    }

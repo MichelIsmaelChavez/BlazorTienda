@@ -1,0 +1,781 @@
+﻿@page "/carrito"
+@using BlazorTienda.Models
+@using BlazorTienda.Services
+@inject CarritoService CarritoService
+@inject SesionService SesionService
+@inject IJSRuntime JS
+@inject EntregaService EntregaService
+@inject NavigationManager Navigation
+@inject SolicitudService SolicitudService
+@inject EmailService EmailService
+
+<div class="container-fluid px-4 py-4">
+    <!-- Encabezado del carrito -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold mb-0">
+            <i class="bi bi-cart3 me-2"></i>Carrito de Compras
+        </h2>
+        <div class="badge bg-primary rounded-pill fs-6">
+            @CarritoService.Items.Count items
+        </div>
+    </div>
+
+    @if (CarritoService.Items.Any())
+    {
+        <!-- Tabla de productos -->
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead style="background-color: #007bff; color: white;">
+                        <tr>
+                            <th style="width: 80px;">Imagen</th>
+                            <th>Producto</th>
+                            <th class="text-end">Precio</th>
+                            <th class="text-center">Cantidad</th>
+                            <th class="text-end">Subtotal</th>
+                            <th style="width: 50px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in CarritoService.Items)
+                        {
+                            var precio = item.Producto.EnOferta ? item.Producto.PrecioOferta : item.Producto.Precio;
+                            <tr class="align-middle">
+                                <td>
+                                    <img src="@item.Producto.ImagenUrl" alt="@item.Producto.Nombre"
+                                         class="rounded-3 shadow-sm" style="width: 60px; height: 60px; object-fit: cover;" />
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">@item.Producto.Nombre</div>
+                                    <small class="text-muted">@item.Producto.Descripcion</small>
+                                    @if (item.Producto.EsFavorito)
+                                    {
+                                        <span class="badge bg-warning text-dark ms-2"><i class="bi bi-star-fill"></i> Favorito</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (item.Producto.EnOferta)
+                                    {
+                                        <span class="text-danger fw-bold">Bs. @precio.ToString("N2")</span>
+                                        <br />
+                                        <small class="text-muted text-decoration-line-through">Bs. @item.Producto.Precio.ToString("N2")</small>
+                                        <br />
+                                        <span class="badge bg-danger">@item.Producto.PorcentajeDescuento.ToString("0")% OFF</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Bs. @precio.ToString("N2")</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <button class="btn btn-sm btn-outline-secondary rounded-circle"
+                                                @onclick="async () => await ActualizarCantidad(item.Producto, item.Cantidad - 1)"
+                                                disabled="@(item.Cantidad <= 1)">
+                                            <i class="bi bi-dash"></i>
+                                        </button>
+                                        <span class="mx-2">@item.Cantidad</span>
+                                        <button class="btn btn-sm btn-outline-secondary rounded-circle"
+                                                @onclick="async () => await ActualizarCantidad(item.Producto, item.Cantidad + 1)"
+                                                disabled="@(item.Cantidad >= item.Producto.Stock)">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </div>
+                                    <small class="text-muted d-block">Stock: @item.Producto.Stock</small>
+                                </td>
+                                <td class="text-end fw-semibold">
+                                    Bs. @((precio * item.Cantidad).ToString("N2"))
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger rounded-circle"
+                                            @onclick="() => ConfirmarEliminar(item.Producto)"
+                                            title="Eliminar del carrito">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sección de entrega y resumen -->
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">
+                            <i class="bi bi-geo-alt me-2"></i>Opciones de entrega
+                        </h5>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="envioDomicilio"
+                                   name="tipoEntrega"
+                                   checked="@(tipoEntrega == "domicilio")"
+                                   @onchange="@(() => tipoEntrega = "domicilio")" />
+                            <label class="form-check-label" for="envioDomicilio">
+                                Envío a domicilio
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="recogerTienda"
+                                   name="tipoEntrega"
+                                   checked="@(tipoEntrega == "tienda")"
+                                   @onchange="@(() => tipoEntrega = "tienda")" />
+                            <label class="form-check-label" for="recogerTienda">
+                                Recoger en tienda
+                            </label>
+                        </div>
+
+                        <!-- Resumen visual de productos -->
+                        <div class="border-top pt-3 mt-3">
+                            <h6 class="fw-bold mb-3">Resumen de tu pedido:</h6>
+                            <div class="d-flex flex-column gap-2">
+                                @foreach (var item in CarritoService.Items)
+                                {
+                                    var precio = item.Producto.EnOferta ? item.Producto.PrecioOferta : item.Producto.Precio;
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="@item.Producto.ImagenUrl"
+                                             alt="@item.Producto.Nombre"
+                                             class="rounded-3 shadow-sm"
+                                             style="width: 50px; height: 50px; object-fit: cover;" />
+                                        <div class="flex-grow-1">
+                                            <div class="fw-semibold">@item.Producto.Nombre</div>
+                                            <small class="text-muted">@item.Cantidad x Bs. @precio.ToString("N2")</small>
+                                        </div>
+                                        <div class="fw-semibold">
+                                            Bs. @((precio * item.Cantidad).ToString("N2"))
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        @if (tipoEntrega == "domicilio")
+                        {
+                            <div class="mt-4">
+                                <label class="form-label">Dirección de envío</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-geo"></i>
+                                    </span>
+                                    <input class="form-control bg-light" disabled
+                                           value="Lat: @SesionService.UsuarioActual?.Latitud, Lng: @SesionService.UsuarioActual?.Longitud" />
+                                </div>
+                                <small class="text-muted">El costo de envío será calculado al finalizar</small>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="mt-4">
+                                <p class="text-muted mb-1">Dirección de la tienda:</p>
+                                <p class="fw-semibold">Av. Principal #123, Zona Central, Ciudad</p>
+                                <p class="text-muted small">Horario de recogida: Lunes a Viernes de 9:00 - 18:00</p>
+                                <p class="text-success small mt-2"><i class="bi bi-check-circle"></i> Recogida en tienda sin costo adicional</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen de compra -->
+            <div class="col-md-6 mb-3">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-primary">
+                            <i class="bi bi-receipt me-2"></i>Total del pedido
+                        </h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Subtotal (@CarritoService.Items.Sum(i => i.Cantidad) items):</span>
+                            <span>Bs. @CarritoService.ObtenerSubtotal().ToString("N2")</span>
+                        </div>
+
+                        @if (CarritoService.ObtenerDescuentos() > 0)
+                        {
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Descuentos:</span>
+                                <span class="text-success">-Bs. @CarritoService.ObtenerDescuentos().ToString("N2")</span>
+                            </div>
+                        }
+
+                        @if (tipoEntrega == "domicilio")
+                        {
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Envío:</span>
+                                <span class="text-muted">Por calcular</span>
+                            </div>
+                        }
+
+                        <hr class="my-2" />
+
+                        <div class="d-flex justify-content-between align-items-center mt-2 mb-4">
+                            <span class="fw-bold">Total:</span>
+                            <span class="fs-4 fw-bold text-success">Bs. @CarritoService.ObtenerTotal().ToString("N2")</span>
+                        </div>
+
+                        <!-- Sección de Método de Pago -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">
+                                <i class="bi bi-credit-card me-2"></i>Método de pago
+                            </h6>
+                            
+                            <div class="mb-3">
+                                <select class="form-select" @onchange="OnMetodoPagoChanged">
+                                    <option value="contado" selected="@(tipoPago == "contado")">Pago al contado</option>
+                                    <option value="cuotas" selected="@(tipoPago == "cuotas")">Pago en cuotas</option>
+                                </select>
+                            </div>
+
+                            @if (tipoPago == "contado")
+                            {
+                                <div class="card border-0 shadow-sm rounded-4 p-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Seleccione el método de pago al contado</label>
+                                        <select class="form-select" @onchange="OnMetodoContadoChanged">
+                                            <option value="efectivo" selected="@(metodoContado == "efectivo")">Efectivo</option>
+                                            <option value="tarjeta" selected="@(metodoContado == "tarjeta")">Tarjeta de débito</option>
+                                            <option value="qr" selected="@(metodoContado == "qr")">Pago por QR</option>
+                                        </select>
+                                    </div>
+
+                                    @if (metodoContado == "efectivo")
+                                    {
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle me-2"></i>
+                                            Por favor, prepare el monto exacto para el pago en efectivo.
+                                        </div>
+                                    }
+                                    else if (metodoContado == "tarjeta")
+                                    {
+                                        <div class="card border-0 shadow-sm rounded-4 p-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">Número de tarjeta</label>
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       @bind="numeroTarjeta"
+                                                       @oninput="FormatearNumeroTarjeta"
+                                                       maxlength="19"
+                                                       placeholder="0000 0000 0000 0000" />
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Fecha de expiración</label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           @bind="fechaExpiracion"
+                                                           @oninput="FormatearFechaExpiracion"
+                                                           maxlength="5"
+                                                           placeholder="MM/AA" />
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">CVV</label>
+                                                    <input type="password" 
+                                                           class="form-control" 
+                                                           @bind="cvv"
+                                                           maxlength="3"
+                                                           placeholder="123" />
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Nombre del titular</label>
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       @bind="nombreTitular"
+                                                       placeholder="Como aparece en la tarjeta" />
+                                            </div>
+                                        </div>
+                                    }
+                                    else if (metodoContado == "qr")
+                                    {
+                                        <div class="text-center">
+                                            <div class="card border-0 shadow-sm rounded-4 p-3 mb-3">
+                                                @{
+                                                    var qrText = new System.Text.StringBuilder();
+                                                    qrText.AppendLine("CLICK SHOP");
+                                                    qrText.AppendLine("-------------------");
+                                                    qrText.AppendLine($"Fecha: {DateTime.Now.ToString("dd/MM/yyyy HH:mm")}");
+                                                    qrText.AppendLine($"Cliente: {SesionService.UsuarioActual?.Nombre ?? "Cliente"}");
+                                                    qrText.AppendLine("-------------------");
+                                                    qrText.AppendLine("PRODUCTOS:");
+                                                    foreach (var item in CarritoService.Items)
+                                                    {
+                                                        var precio = item.Producto.EnOferta ? item.Producto.PrecioOferta : item.Producto.Precio;
+                                                        qrText.AppendLine($"- {item.Producto.Nombre}");
+                                                        qrText.AppendLine($"  Cantidad: {item.Cantidad}");
+                                                        qrText.AppendLine($"  Precio: Bs. {precio.ToString("N2")}");
+                                                        qrText.AppendLine($"  Subtotal: Bs. {(precio * item.Cantidad).ToString("N2")}");
+                                                    }
+                                                    qrText.AppendLine("-------------------");
+                                                    qrText.AppendLine($"Subtotal: Bs. {CarritoService.ObtenerSubtotal().ToString("N2")}");
+                                                    if (CarritoService.ObtenerDescuentos() > 0)
+                                                    {
+                                                        qrText.AppendLine($"Descuentos: Bs. {CarritoService.ObtenerDescuentos().ToString("N2")}");
+                                                    }
+                                                    qrText.AppendLine($"TOTAL: Bs. {CarritoService.ObtenerTotal().ToString("N2")}");
+                                                }
+                                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=@(qrText.ToString())" 
+                                                     alt="Código QR de pago" 
+                                                     class="img-fluid mb-3" />
+                                                <div class="text-start">
+                                                    <h6 class="fw-bold mb-2">Detalles del pago:</h6>
+                                                    <p class="mb-1"><small>Cliente: @SesionService.UsuarioActual?.Nombre</small></p>
+                                                    <p class="mb-1"><small>Fecha: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</small></p>
+                                                    <p class="mb-1"><small>Total: Bs. @CarritoService.ObtenerTotal().ToString("N2")</small></p>
+                                                    <p class="mb-0"><small>Método: Pago QR</small></p>
+                                                </div>
+                                            </div>
+                                            <div class="alert alert-info">
+                                                <i class="bi bi-info-circle me-2"></i>
+                                                El código QR expirará en 15 minutos
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                            @if (tipoPago == "cuotas")
+                            {
+                                <div class="mt-3">
+                                    <label class="form-label fw-semibold">Selecciona el plan de cuotas</label>
+                                    <select class="form-select" @onchange="OnPlanCuotasChanged">
+                                        <option value="0">Seleccione un plan</option>
+                                        <option value="3">3 cuotas (3 meses)</option>
+                                        <option value="6">6 cuotas (6 meses)</option>
+                                        <option value="9">9 cuotas (9 meses)</option>
+                                        <option value="12">12 cuotas (12 meses)</option>
+                                    </select>
+
+
+                                    
+                                    @if (cuotaMensual > 0)
+                                    {
+                                        <div class="alert alert-info mt-3">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-currency-exchange fs-4 me-3"></i>
+                                                <div>
+                                                    <h6 class="mb-1">Cuota mensual estimada</h6>
+                                                    <span class="fs-5 fw-bold">Bs. @cuotaMensual.ToString("N2")</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <div class="mt-auto">
+                            @if (tipoPago == "contado" || tipoPago == "tarjeta")
+                            {
+                                <button class="btn btn-success w-100 py-3 fw-bold" @onclick="Comprar">
+                                    <i class="bi bi-bag-check me-1"></i>Finalizar compra
+                                </button>
+                            }
+                            else if (tipoPago == "cuotas" && planCuotas > 0)
+                            {
+                                <button class="btn btn-primary w-100 py-3 fw-bold" @onclick="EnviarSolicitudCredito">
+                                    <i class="bi bi-send-check me-1"></i>Enviar solicitud de crédito
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary w-100 py-3 fw-bold" disabled>
+                                    <i class="bi bi-bag-check me-1"></i>Finalizar compra
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-between gap-3 mt-4 flex-wrap">
+            <button class="btn btn-outline-danger px-4 py-2" @onclick="Vaciar">
+                <i class="bi bi-trash3 me-1"></i>Vaciar carrito
+            </button>
+            <div class="d-flex gap-3">
+                <button class="btn btn-outline-primary px-4 py-2" @onclick="GenerarPDF">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>Generar PDF
+                </button>
+                <a href="/tienda" class="btn btn-outline-secondary px-4 py-2">
+                    <i class="bi bi-arrow-left me-1"></i>Seguir comprando
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Carrito vacío -->
+        <div class="text-center py-5 my-5">
+            <div class="bg-light rounded-circle d-inline-flex p-4 mb-3">
+                <i class="bi bi-cart-x display-4 text-muted"></i>
+            </div>
+            <h3 class="mt-3 fw-semibold">Tu carrito está vacío</h3>
+            <p class="text-muted mb-4">Agrega productos desde la tienda para comenzar</p>
+            <a href="/tienda" class="btn btn-primary px-4 py-2 rounded-5">
+                <i class="bi bi-arrow-left me-1"></i> Volver a la tienda
+            </a>
+        </div>
+    }
+</div>
+
+@if (mostrarToast)
+{
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-@tipoToast text-white">
+                <strong class="me-auto">Notificación</strong>
+                <button type="button" class="btn-close btn-close-white" @onclick="() => mostrarToast = false"></button>
+            </div>
+            <div class="toast-body">
+                @mensaje
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    string mensaje = string.Empty;
+    string tipoToast = "success";
+    bool mostrarToast = false;
+    string tipoEntrega = "domicilio";
+    string tipoPago = "contado";
+    string metodoContado = "efectivo";
+    int planCuotas = 0;
+    decimal cuotaMensual = 0;
+    bool solicitudEnviada = false;
+    string numeroTarjeta = string.Empty;
+    string fechaExpiracion = string.Empty;
+    string cvv = string.Empty;
+    string nombreTitular = string.Empty;
+
+    private async Task ActualizarCantidad(Producto producto, int nuevaCantidad)
+    {
+        if (nuevaCantidad > producto.Stock)
+        {
+            await JS.InvokeVoidAsync("Swal.fire", "Advertencia", $"No hay suficiente stock. Máximo disponible: {producto.Stock}", "warning");
+            return;
+        }
+
+        if (nuevaCantidad < 1)
+        {
+            await ConfirmarEliminar(producto);
+            return;
+        }
+
+        await CarritoService.ActualizarCantidadAsync(producto, nuevaCantidad);
+    }
+
+    async Task ConfirmarEliminar(Producto p)
+    {
+        bool confirmar = await JS.InvokeAsync<bool>("confirm", $"¿Eliminar '{p.Nombre}' del carrito?");
+        if (confirmar)
+        {
+            await CarritoService.EliminarDelCarritoAsync(p);
+            MostrarToast($"Producto eliminado: {p.Nombre}", "danger");
+        }
+    }
+
+    async Task Vaciar()
+    {
+        bool confirmar = await JS.InvokeAsync<bool>("confirm", "¿Estás seguro de vaciar el carrito?");
+        if (confirmar)
+        {
+            await CarritoService.VaciarAsync();
+            MostrarToast("Carrito vaciado correctamente", "warning");
+        }
+    }
+
+    void CalcularCuotaMensual()
+    {
+        if (planCuotas > 0)
+        {
+            cuotaMensual = CarritoService.ObtenerTotal() / planCuotas;
+        }
+        else
+        {
+            cuotaMensual = 0;
+        }
+    }
+    private void OnPlanCuotasChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int valor))
+        {
+            planCuotas = valor;
+            CalcularCuotaMensual();
+        }
+    }
+
+    async Task EnviarSolicitudCredito()
+    {
+        if (SesionService.UsuarioActual == null)
+        {
+            await JS.InvokeVoidAsync("Swal.fire", "Atención", "Debes iniciar sesión para solicitar crédito", "warning");
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        try
+        {
+            var solicitud = new Solicitud
+            {
+                UsuarioId = SesionService.UsuarioActual.Id,
+                DocumentoCliente = SesionService.UsuarioActual.DocumentoCliente,
+                CelularCliente = SesionService.UsuarioActual.CelularCliente,
+                TrabajoCliente = SesionService.UsuarioActual.TrabajoCliente,
+                PlanCuotas = planCuotas,
+                CuotaMensual = cuotaMensual,
+                MontoTotal = CarritoService.ObtenerTotal(),
+                Productos = CarritoService.Items.Select(i => new ProductoSolicitud
+                {
+                    ProductoId = i.Producto.Id,
+                    Nombre = i.Producto.Nombre,
+                    ImagenUrl = i.Producto.ImagenUrl,
+                    Cantidad = i.Cantidad,
+                    PrecioUnitario = i.Producto.EnOferta ? i.Producto.PrecioOferta : i.Producto.Precio
+                }).ToList(),
+                FechaSolicitud = DateTime.Now,
+                Estado = "Pendiente"
+            };
+
+            SolicitudService.AgregarSolicitud(solicitud);
+            await CarritoService.VaciarAsync();
+            solicitudEnviada = true;
+
+            await JS.InvokeVoidAsync("Swal.fire",
+                "¡Solicitud enviada!",
+                $"Hemos recibido tu solicitud de crédito a {planCuotas} cuotas. Te notificaremos cuando sea aprobada.",
+                "success");
+
+            Navigation.NavigateTo("/mispagos");
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("Swal.fire", "Error", $"Error al enviar solicitud: {ex.Message}", "error");
+        }
+    }
+
+    async Task Comprar()
+    {
+        if (SesionService.UsuarioActual == null)
+        {
+            await JS.InvokeVoidAsync("Swal.fire", "Atención", "Debes iniciar sesión para realizar la compra", "warning");
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        Console.WriteLine($"Usuario actual: {SesionService.UsuarioActual.Nombre}");
+        Console.WriteLine($"Correo del usuario: {SesionService.UsuarioActual.Correo}");
+
+        foreach (var item in CarritoService.Items)
+        {
+            if (item.Cantidad > item.Producto.Stock)
+            {
+                await JS.InvokeVoidAsync("Swal.fire", "Error", $"No hay suficiente stock de {item.Producto.Nombre}. Stock disponible: {item.Producto.Stock}", "error");
+                return;
+            }
+        }
+
+        try
+        {
+            var nuevaEntrega = new Entrega
+            {
+                ClienteNombre = SesionService.UsuarioActual.Nombre,
+                ClienteEmail = SesionService.UsuarioActual.Correo,
+                DireccionEntrega = tipoEntrega == "domicilio" ?
+                    $"Lat: {SesionService.UsuarioActual.Latitud}, Lng: {SesionService.UsuarioActual.Longitud}" :
+                    "Recojo en tienda - Av. Principal #123",
+                TipoEntrega = tipoEntrega == "domicilio" ? "Domicilio" : "Tienda",
+                EstadoEntrega = "Pendiente",
+                Productos = CarritoService.Items.Select(i => new ProductoEntrega
+                {
+                    ProductoId = i.Producto.Id,
+                    Nombre = i.Producto.Nombre,
+                    ImagenUrl = i.Producto.ImagenUrl,
+                    Cantidad = i.Cantidad,
+                    PrecioUnitario = i.Producto.EnOferta ? i.Producto.PrecioOferta : i.Producto.Precio
+                }).ToList(),
+                Total = CarritoService.ObtenerTotal(),
+                TipoPago = tipoPago,
+                PlanCuotas = tipoPago == "cuotas" ? planCuotas : 0,
+                CuotaMensual = tipoPago == "cuotas" ? cuotaMensual : 0,
+                FechaCompra = DateTime.Now,
+                HistorialEstados = new List<string> { $"Pendiente ({DateTime.Now:dd/MM/yyyy HH:mm})" }
+            };
+
+            Console.WriteLine($"Correo que se usará para la factura: {nuevaEntrega.ClienteEmail}");
+
+            await EntregaService.AgregarAsync(nuevaEntrega);
+            await CarritoService.VaciarAsync();
+
+            try
+            {
+                // Enviar correo con la factura
+                await EmailService.EnviarFactura(nuevaEntrega);
+                Console.WriteLine($"Correo enviado exitosamente a {nuevaEntrega.ClienteEmail}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al enviar el correo: {ex.Message}");
+                await JS.InvokeVoidAsync("Swal.fire", 
+                    "Aviso", 
+                    "La compra se realizó correctamente, pero hubo un problema al enviar el correo con la factura. Por favor, verifica tu correo electrónico en tu perfil.", 
+                    "warning");
+            }
+
+            var mensajeExito = tipoPago == "contado" 
+                ? (tipoEntrega == "domicilio" 
+                    ? "Tu pedido será enviado a tu domicilio. Se ha enviado una factura virtual a tu correo electrónico." 
+                    : "Puedes recoger tu pedido en nuestra tienda. Se ha enviado una factura virtual a tu correo electrónico.")
+                : $"Tu pedido será procesado en {planCuotas} cuotas de Bs. {cuotaMensual.ToString("N2")}. Se ha enviado una factura virtual a tu correo electrónico.";
+
+            await JS.InvokeVoidAsync("Swal.fire", "¡Compra exitosa!", mensajeExito, "success");
+
+            Navigation.NavigateTo("/tienda");
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("Swal.fire", "Error", $"Error al procesar la compra: {ex.Message}", "error");
+        }
+    }
+
+    async Task GenerarPDF()
+    {
+        if (SesionService.UsuarioActual == null)
+        {
+            await JS.InvokeVoidAsync("Swal.fire", "Atención", "Debes iniciar sesión para generar el PDF", "warning");
+            return;
+        }
+
+        try
+        {
+            await JS.InvokeVoidAsync("generarFacturaPDF", new
+            {
+                fecha = DateTime.Now.ToString("dd/MM/yyyy HH:mm"),
+                cliente = SesionService.UsuarioActual.Nombre,
+                tipoEntrega = tipoEntrega == "domicilio" ? "Envío a domicilio" : "Recojo en tienda",
+                direccion = tipoEntrega == "domicilio" ?
+                    $"Lat: {SesionService.UsuarioActual.Latitud}, Lng: {SesionService.UsuarioActual.Longitud}" :
+                    "Av. Principal #123, Zona Central, Ciudad",
+                tipoPago = tipoPago == "contado" ? "Contado" : $"Crédito ({planCuotas} cuotas)",
+                cuotaMensual = tipoPago == "cuotas" ? cuotaMensual.ToString("0.00") : "0.00",
+                total = CarritoService.ObtenerTotal().ToString("0.00"),
+                items = CarritoService.Items.Select(i => new
+                {
+                    imagen = i.Producto.ImagenUrl,
+                    nombre = i.Producto.Nombre,
+                    precio = (i.Producto.EnOferta ? i.Producto.PrecioOferta : i.Producto.Precio).ToString("0.00"),
+                    cantidad = i.Cantidad,
+                    subtotal = ((i.Producto.EnOferta ? i.Producto.PrecioOferta : i.Producto.Precio) * i.Cantidad).ToString("0.00")
+                })
+            });
+
+            await JS.InvokeVoidAsync("Swal.fire", "PDF generado", "El comprobante fue generado correctamente", "success");
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("Swal.fire", "Error", $"Error al generar PDF: {ex.Message}", "error");
+        }
+    }
+
+    void MostrarToast(string msg, string tipo = "success")
+    {
+        mensaje = msg;
+        tipoToast = tipo;
+        mostrarToast = true;
+
+        var timer = new System.Timers.Timer(3000);
+        timer.Elapsed += (s, e) =>
+        {
+            mostrarToast = false;
+            InvokeAsync(StateHasChanged);
+            timer.Dispose();
+        };
+        timer.Start();
+    }
+
+    void OnMetodoPagoChanged(ChangeEventArgs e)
+    {
+        if (e.Value is string newPago)
+        {
+            tipoPago = newPago;
+            if (tipoPago == "cuotas")
+            {
+                planCuotas = 0;
+                cuotaMensual = 0;
+            }
+            else if (tipoPago == "tarjeta" || tipoPago == "contado")
+            {
+                numeroTarjeta = string.Empty;
+                fechaExpiracion = string.Empty;
+                cvv = string.Empty;
+                nombreTitular = string.Empty;
+            }
+        }
+    }
+
+    void OnMetodoContadoChanged(ChangeEventArgs e)
+    {
+        if (e.Value is string newMetodo)
+        {
+            metodoContado = newMetodo;
+            if (metodoContado != "tarjeta")
+            {
+                numeroTarjeta = string.Empty;
+                fechaExpiracion = string.Empty;
+                cvv = string.Empty;
+                nombreTitular = string.Empty;
+            }
+        }
+    }
+
+    void FormatearNumeroTarjeta(ChangeEventArgs e)
+    {
+        if (e.Value is string value)
+        {
+            // Eliminar todos los espacios y caracteres no numéricos
+            string numeros = new string(value.Where(char.IsDigit).ToArray());
+            
+            // Formatear con espacios cada 4 dígitos
+            string formateado = string.Empty;
+            for (int i = 0; i < numeros.Length; i++)
+            {
+                if (i > 0 && i % 4 == 0)
+                {
+                    formateado += " ";
+                }
+                formateado += numeros[i];
+            }
+            
+            numeroTarjeta = formateado;
+        }
+    }
+
+    void FormatearFechaExpiracion(ChangeEventArgs e)
+    {
+        if (e.Value is string value)
+        {
+            // Eliminar todos los caracteres no numéricos
+            string numeros = new string(value.Where(char.IsDigit).ToArray());
+            
+            // Formatear con / después de 2 dígitos
+            string formateado = string.Empty;
+            for (int i = 0; i < numeros.Length; i++)
+            {
+                if (i == 2)
+                {
+                    formateado += "/";
+                }
+                formateado += numeros[i];
+            }
+            
+            fechaExpiracion = formateado;
+        }
+    }
+}

@@ -1,0 +1,336 @@
+﻿@page "/gestion-deliverys"
+@using BlazorTienda.Models
+@inject Services.DeliveryService DeliveryService
+
+@inject Services.UsuarioService UsuarioService
+
+@inject IJSRuntime JS
+
+
+
+        
+<div class="container mt-4">
+    <div class="card shadow-sm rounded-4 p-4">
+        <h3 class="text-primary fw-bold mb-3">
+            <i class="bi bi-bicycle me-2"></i> Gestión de Deliverys
+        </h3>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="mb-3">Agregar</h5>
+                <input class="form-control rounded-3"
+                       @bind="nuevoDelivery.Nombre"
+                       @oninput="(e => GenerarCorreo(((ChangeEventArgs)e).Value?.ToString()))"
+                       placeholder="Ingrese nombre completo" />
+
+
+
+                <div class="form-group mb-3">
+                    <label>Teléfono:</label>
+                    <input class="form-control rounded-3" @bind="nuevoDelivery.Telefono" placeholder="Ingrese teléfono" />
+                </div>
+                <div class="form-group mb-3">
+                    <label>Correo:</label>
+                    <input class="form-control rounded-3" @bind="nuevoDelivery.Correo" readonly />
+                </div>
+
+
+                <div class="form-group mb-3">
+                    <label>Contraseña:</label>
+                    <input class="form-control rounded-3" @bind="nuevoDelivery.Contrasenia" placeholder="Contraseña" type="password" />
+                </div>
+
+
+                <div class="form-group mb-3">
+                    <label>Vehículo:</label>
+                    <input class="form-control rounded-3" @bind="nuevoDelivery.Vehiculo" placeholder="Ingrese tipo de vehículo" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Placa:</label>
+                    <input class="form-control rounded-3" @bind="nuevoDelivery.Placa" placeholder="Ingrese número de placa" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Estado:</label>
+                    <select class="form-select rounded-3" @bind="nuevoDelivery.Estado">
+                        <option value="Disponible">Disponible</option>
+                        <option value="Ocupado">Ocupado</option>
+                        <option value="Fuera de Servicio">Fuera de Servicio</option>
+                    </select>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-success rounded-3 px-4" @onclick="Guardar">
+                        <i class="bi bi-save me-1"></i>Guardar
+                    </button>
+
+                    @if (modoEdicion)
+                    {
+                        <button class="btn btn-secondary rounded-3 px-4" @onclick="CancelarEdicion">
+                            <i class="bi bi-x-circle me-1"></i>Cancelar
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm rounded-4 p-4 mt-4">
+        <h5 class="text-primary fw-bold mb-3">Lista de Deliverys</h5>
+
+        @if (deliverys.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr class="table-primary">
+                            <th>Nombre</th>
+                            <th>Teléfono</th>
+                            <th>Vehículo</th>
+                            <th>Placa</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var delivery in deliverys)
+                        {
+                            <tr>
+                                <td>@delivery.Nombre</td>
+                                <td>@delivery.Telefono</td>
+                                <td>@delivery.Vehiculo</td>
+                                <td>@delivery.Placa</td>
+                                <td>
+                                    @switch (delivery.Estado)
+                                    {
+                                        case "Disponible":
+                                            <span class="badge bg-success">Disponible</span>
+                                            break;
+                                        case "Ocupado":
+                                            <span class="badge bg-warning text-dark">Ocupado</span>
+                                            break;
+                                        case "Fuera de Servicio":
+                                            <span class="badge bg-danger">Fuera de Servicio</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-secondary">@delivery.Estado</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="d-flex gap-2">
+                                    <button class="btn btn-outline-primary btn-sm rounded-3" @onclick="() => Editar(delivery)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm rounded-3" @onclick="() => Eliminar(delivery.Id)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">No hay deliverys registrados.</p>
+        }
+    </div>
+</div>
+
+
+@if (mostrarToast)
+{
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
+        <div class="toast show text-white bg-@colorToast border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex align-items-center">
+                <div class="toast-body">
+                    <i class="bi @iconoToast me-2"></i> @mensajeToast
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" @onclick="CerrarToast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    private List<Delivery> deliverys = new();
+    private Delivery nuevoDelivery = new();
+    private bool modoEdicion = false;
+    private bool mostrarToast = false;
+    private string mensajeToast = string.Empty;
+    private string colorToast = "success"; // success, danger, info
+    private string iconoToast = "bi-check-circle"; // Bootstrap icon
+
+
+    private void MostrarToast(string mensaje, string tipo = "success")
+    {
+        mensajeToast = mensaje;
+        colorToast = tipo;
+
+        // Íconos según tipo
+        iconoToast = tipo switch
+        {
+            "success" => "bi-check-circle",
+            "danger" => "bi-exclamation-triangle",
+            "info" => "bi-info-circle",
+            _ => "bi-info-circle"
+        };
+
+        mostrarToast = true;
+
+        // Cerrar el toast automáticamente después de 3 segundos
+        var timer = new System.Timers.Timer(3000);
+        timer.Elapsed += (s, e) =>
+        {
+            mostrarToast = false;
+            InvokeAsync(StateHasChanged);
+            timer.Dispose();
+        };
+        timer.Start();
+    }
+
+    private void CerrarToast()
+    {
+        mostrarToast = false;
+    }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("🚀 Iniciando Gestión Deliverys...");
+        await DeliveryService.InicializarAsync();
+        deliverys = DeliveryService.ObtenerTodos() ?? new();
+    }
+
+    private async Task Guardar()
+    {
+        if (string.IsNullOrWhiteSpace(nuevoDelivery.Nombre) ||
+            string.IsNullOrWhiteSpace(nuevoDelivery.Correo) ||
+            string.IsNullOrWhiteSpace(nuevoDelivery.Contrasenia))
+        {
+            MostrarToast("Nombre, correo y contraseña son obligatorios", "danger");
+            return;
+        }
+
+        if (modoEdicion)
+        {
+            await DeliveryService.ActualizarAsync(nuevoDelivery);
+            MostrarToast("Delivery actualizado exitosamente", "info");
+        }
+        else
+        {
+            await DeliveryService.AgregarAsync(nuevoDelivery);
+
+            // Validar si ya existe un usuario con ese correo
+            var existentes = await UsuarioService.ObtenerTodosAsync();
+            if (!existentes.Any(u => u.Correo == nuevoDelivery.Correo))
+            {
+                var nuevoUsuario = new Usuario
+                    {
+                        Nombre = nuevoDelivery.Nombre,
+                        Correo = nuevoDelivery.Correo,
+                        Contrasena = nuevoDelivery.Contrasenia,
+                        Rol = "Delivery",
+                        Latitud = 0,
+                        Longitud = 0,
+                        FotoRostro = "",
+                        DocumentoCliente = "",
+                        TrabajoCliente = "",
+                        CelularCliente = nuevoDelivery.Telefono
+                    };
+
+                await UsuarioService.AgregarAsync(nuevoUsuario);
+            }
+
+            MostrarToast("Nuevo delivery y usuario creados", "success");
+        }
+
+        deliverys = DeliveryService.ObtenerTodos();
+        nuevoDelivery = new Delivery();
+        modoEdicion = false;
+    }
+
+
+
+
+
+    private void Editar(Delivery delivery)
+    {
+        nuevoDelivery = new Delivery
+            {
+                Id = delivery.Id,
+                Nombre = delivery.Nombre,
+                Telefono = delivery.Telefono,
+                Vehiculo = delivery.Vehiculo,
+                Placa = delivery.Placa,
+                Estado = delivery.Estado
+            };
+        modoEdicion = true;
+    }
+
+    private async Task Eliminar(int id)
+    {
+        bool confirmado = await JS.InvokeAsync<bool>("confirmarEliminacion");
+
+        if (confirmado)
+        {
+            await DeliveryService.EliminarAsync(id);
+            deliverys = DeliveryService.ObtenerTodos();
+            MostrarToast("Delivery eliminado", "danger");
+        }
+    }
+
+
+
+    private void CancelarEdicion()
+    {
+        nuevoDelivery = new Delivery();
+        modoEdicion = false;
+    }
+
+    private void GenerarCorreo(ChangeEventArgs e)
+    {
+        if (!string.IsNullOrWhiteSpace(nuevoDelivery.Nombre))
+        {
+            var partes = nuevoDelivery.Nombre.Trim().ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (partes.Length >= 2)
+            {
+                nuevoDelivery.Correo = $"{partes[0]}.{partes[1]}@delivery.com";
+            }
+            else
+            {
+                nuevoDelivery.Correo = $"{partes[0]}@delivery.com";
+            }
+        }
+        else
+        {
+            nuevoDelivery.Correo = string.Empty;
+        }
+    }
+
+    private void GenerarCorreo(string? nombreCompleto)
+    {
+        if (!string.IsNullOrWhiteSpace(nombreCompleto))
+        {
+            var partes = nombreCompleto.Trim().ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (partes.Length >= 2)
+            {
+                nuevoDelivery.Correo = $"{partes[0]}.{partes[1]}@delivery.com";
+            }
+            else
+            {
+                nuevoDelivery.Correo = $"{partes[0]}@delivery.com";
+            }
+        }
+        else
+        {
+            nuevoDelivery.Correo = string.Empty;
+        }
+    }
+
+
+}

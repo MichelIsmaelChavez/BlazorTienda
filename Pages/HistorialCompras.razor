@@ -1,0 +1,234 @@
+@page "/historial-compras"
+@using BlazorTienda.Models
+@using BlazorTienda.Services
+@inject EntregaService EntregaService
+@inject SesionService SesionService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h3 class="text-primary mb-4">
+                <i class="bi bi-clock-history me-2"></i>Historial de Compras
+            </h3>
+        </div>
+    </div>
+
+    @if (Compras.Count == 0)
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>No tienes compras registradas.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var compra in Compras.OrderByDescending(c => c.Id))
+            {
+                <div class="col-md-6">
+                    <div class="card compra-card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-receipt me-2"></i>Compra #@compra.Id
+                                </h5>
+                                <span class="badge @GetEstadoCss(compra.EstadoEntrega) rounded-pill">
+                                    <i class="bi @GetEstadoIcono(compra.EstadoEntrega) me-1"></i>@compra.EstadoEntrega
+                                </span>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <i class="bi bi-calendar3 me-2 text-primary"></i>
+                                        <span class="text-muted">Fecha:</span>
+                                        <span class="fw-bold">@GetFechaCompra(compra)</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <i class="bi bi-cash-stack me-2 text-primary"></i>
+                                        <span class="text-muted">Total:</span>
+                                        <span class="fw-bold">Bs. @compra.Total.ToString("N2")</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <i class="bi bi-credit-card me-2 text-primary"></i>
+                                        <span class="text-muted">Método de Pago:</span>
+                                        <span class="fw-bold">
+                                            @if (compra.TipoPago == "contado")
+                                            {
+                                                <span>Pago al contado</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Crédito (@compra.PlanCuotas cuotas)</span>
+                                            }
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <i class="bi bi-truck me-2 text-primary"></i>
+                                        <span class="text-muted">Tipo de Entrega:</span>
+                                        <span class="fw-bold">@compra.TipoEntrega</span>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="info-item">
+                                        <i class="bi bi-geo-alt me-2 text-primary"></i>
+                                        <span class="text-muted">Dirección:</span>
+                                        <span class="fw-bold">@compra.DireccionEntrega</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <button class="btn btn-outline-primary btn-sm" @onclick="() => MostrarProductos(compra)">
+                                    <i class="bi bi-box-seam me-2"></i>Ver productos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Modal para mostrar productos -->
+@if (productosModal != null)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-box-seam me-2"></i>Productos de la compra
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="CerrarModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 80px;">Imagen</th>
+                                    <th>Producto</th>
+                                    <th class="text-end">Precio</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var producto in productosModal)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="@producto.ImagenUrl" 
+                                                 alt="@producto.Nombre"
+                                                 class="img-thumbnail"
+                                                 style="width: 60px; height: 60px; object-fit: cover;" />
+                                        </td>
+                                        <td>@producto.Nombre</td>
+                                        <td class="text-end">Bs. @producto.PrecioUnitario.ToString("N2")</td>
+                                        <td class="text-center">@producto.Cantidad</td>
+                                        <td class="text-end">Bs. @((producto.PrecioUnitario * producto.Cantidad).ToString("N2"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CerrarModal">
+                        <i class="bi bi-x-circle me-2"></i>Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    private List<Entrega> Compras = new();
+    private List<ProductoEntrega>? productosModal = null;
+    private System.Timers.Timer? timerActualizacion;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!SesionService.EstaAutenticado)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await CargarCompras();
+
+        // Configurar timer para actualizar cada 30 segundos
+        timerActualizacion = new System.Timers.Timer(30000);
+        timerActualizacion.Elapsed += async (s, e) => await CargarCompras();
+        timerActualizacion.Start();
+    }
+
+    private async Task CargarCompras()
+    {
+        var todas = await EntregaService.ObtenerTodasAsync();
+        Compras = todas
+            .Where(e => e.ClienteEmail == SesionService.UsuarioActual?.Correo)
+            .ToList();
+        StateHasChanged();
+    }
+
+    private void MostrarProductos(Entrega compra)
+    {
+        productosModal = compra.Productos;
+        StateHasChanged();
+    }
+
+    private void CerrarModal()
+    {
+        productosModal = null;
+        StateHasChanged();
+    }
+
+    private string GetEstadoCss(string estado) => estado switch
+    {
+        "Pendiente" => "bg-secondary",
+        "En preparación" => "bg-warning text-dark",
+        "En camino" => "bg-info text-dark",
+        "Entregado" => "bg-success",
+        _ => "bg-secondary"
+    };
+
+    private string GetEstadoIcono(string estado) => estado switch
+    {
+        "Pendiente" => "bi-hourglass-split",
+        "En preparación" => "bi-box-seam",
+        "En camino" => "bi-truck",
+        "Entregado" => "bi-check-circle",
+        _ => "bi-question-circle"
+    };
+
+    private string GetFechaCompra(Entrega compra)
+    {
+        if (compra.HistorialEstados?.Any() == true)
+        {
+            var primerEstado = compra.HistorialEstados.First();
+            var fechaStr = primerEstado.Split('(')[1].TrimEnd(')');
+            if (DateTime.TryParse(fechaStr, out DateTime fecha))
+            {
+                return fecha.ToString("dd/MM/yyyy HH:mm");
+            }
+        }
+        return "Fecha no disponible";
+    }
+
+    public void Dispose()
+    {
+        timerActualizacion?.Dispose();
+    }
+} 

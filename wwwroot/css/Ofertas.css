@@ -1,0 +1,27 @@
+﻿/* Estilos para etiqueta de descuento */
+.badge.bg-danger {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Estilo para productos en oferta */
+.product-card:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* Banner de agotado */
+.agotado-banner {
+    position: absolute;
+    top: 10px;
+    right: -30px;
+    background-color: #dc3545;
+    color: white;
+    padding: 5px 30px;
+    transform: rotate(45deg);
+    z-index: 1;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}

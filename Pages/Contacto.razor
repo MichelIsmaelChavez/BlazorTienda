@@ -1,0 +1,37 @@
+﻿@page "/contacto"
+
+<h3>Contáctanos</h3>
+
+<div class="mb-3">
+    <label>Tu email:</label>
+    <input @bind="_email" class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label>Mensaje:</label>
+    <textarea @bind="_mensaje" class="form-control" rows="4"></textarea>
+</div>
+
+<button @onclick="Enviar" class="btn btn-primary">Enviar</button>
+
+@if (_enviado)
+{
+    <div class="alert alert-success mt-3">
+        Mensaje enviado. Te responderemos pronto.
+    </div>
+}
+
+@code {
+    private string _email = "";
+    private string _mensaje = "";
+    private bool _enviado = false;
+
+    private void Enviar()
+    {
+        // Simplemente muestra en consola (en producción enviarías por email)
+        Console.WriteLine($"Contacto: {_email} - {_mensaje}");
+        _enviado = true;
+        _email = "";
+        _mensaje = "";
+    }
+}

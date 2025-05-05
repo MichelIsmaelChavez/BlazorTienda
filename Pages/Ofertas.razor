@@ -1,0 +1,186 @@
+﻿@page "/ofertas"
+@layout MainLayout
+@using BlazorTienda.Models
+@using BlazorTienda.Services
+@inject ProductoService ProductoService
+@inject CarritoService CarritoService
+@inject NavigationManager NavigationManager
+
+<!-- Carrusel de Promociones -->
+<div id="promoCarousel"
+     class="carousel slide shadow rounded-4 overflow-hidden"
+     data-bs-ride="carousel"
+     style="margin-top: 0; padding-top: 0;">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="images/promos/promo1.jpg" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="Promo 1">
+            <div class="carousel-caption d-none d-md-block">
+                <h5 class="text-white fw-bold">¡Promoción Especial!</h5>
+                <p>Descubre nuestras ofertas más exclusivas.</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="images/promos/promo2.jpg" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="Promo 2">
+            <div class="carousel-caption d-none d-md-block">
+                <h5 class="text-white fw-bold">¡Nuevos Productos!</h5>
+                <p>Encuentra lo mejor para ti.</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="images/promos/promo3.jpg" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="Promo 3">
+            <div class="carousel-caption d-none d-md-block">
+                <h5 class="text-white fw-bold">¡Descuentos Increíbles!</h5>
+                <p>Aprovecha antes de que terminen.</p>
+            </div>
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#promoCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Siguiente</span>
+    </button>
+</div>
+
+<br>
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="text-danger mb-0">
+            <i class="bi bi-percent"></i> Productos en Oferta
+        </h3>
+
+        <div class="d-flex gap-3">
+            <div class="input-group" style="width: 250px;">
+                <span class="input-group-text bg-white">
+                    <i class="bi bi-sort-down"></i>
+                </span>
+                <select class="form-select" @bind="ordenSeleccionado">
+                    <option value="precio-desc">Mayor descuento</option>
+                    <option value="precio-asc">Menor precio</option>
+                    <option value="nombre-asc">Nombre (A-Z)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    @if (productosEnOferta.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+            @foreach (var producto in productosEnOferta)
+            {
+                <div class="col">
+                    <!-- Reutiliza el mismo card de producto que en Tienda.razor -->
+                    <div class="card product-card h-100 position-relative border-0 shadow-sm">
+                        @if (producto.Stock == 0)
+                        {
+                            <div class="agotado-banner">AGOTADO</div>
+                        }
+
+                        <div class="position-relative overflow-hidden" style="height: 200px;">
+                            <img src="@producto.ImagenUrl" class="card-img-top h-100 w-100 object-fit-cover" />
+                            <div class="badge bg-danger position-absolute top-0 start-0 m-2">
+                                -@producto.PorcentajeDescuento.ToString("0")%
+                            </div>
+                            <div class="card-img-overlay d-flex justify-content-end align-items-start p-2">
+                                <button class="btn btn-sm btn-light rounded-circle shadow-sm"
+                                        @onclick="() => ToggleFavorito(producto)">
+                                    <i class="bi @(producto.EsFavorito ? "bi-heart-fill text-danger" : "bi-heart")"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge bg-primary bg-opacity-10 text-primary">
+                                    @producto.Categoria
+                                </span>
+
+                                <div class="text-end">
+                                    <span class="text-danger fw-bold">Bs. @producto.PrecioOferta.ToString("N2")</span><br />
+                                    <small class="text-muted text-decoration-line-through">Bs. @producto.Precio.ToString("N2")</small><br />
+                                    <small class="text-secondary">12 cuotas de Bs. @(Math.Round(producto.PrecioOferta / 12, 2))</small>
+                                </div>
+                            </div>
+
+                            <h5 class="card-title">@producto.Nombre</h5>
+                            <p class="card-text text-muted small">@producto.Descripcion</p>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="badge bg-@(producto.Stock > 0 ? "success" : "danger") bg-opacity-10 text-@(producto.Stock > 0 ? "success" : "danger")">
+                                    @(producto.Stock > 0 ? $"{producto.Stock} disponibles" : "Agotado")
+                                </span>
+
+                                <button class="btn btn-sm @(producto.Stock > 0 ? "btn-primary" : "btn-secondary")"
+                                        @onclick="() => AgregarAlCarritoAsync(producto)"
+                                        disabled="@(producto.Stock == 0)">
+                                    <i class="bi bi-cart-plus me-1"></i>
+                                    @(producto.Stock == 0 ? "Agotado" : "Agregar")
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="py-5">
+                <i class="bi bi-emoji-frown display-1 text-muted"></i>
+                <h4 class="mt-3">No hay ofertas disponibles</h4>
+                <p class="text-muted">Vuelve a revisar más tarde</p>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private string ordenSeleccionado = "precio-desc";
+    private List<Producto> productosEnOferta = new();
+
+    protected override void OnInitialized()
+    {
+        productosEnOferta = ProductoService.GetProductosEnOferta();
+        OrdenarProductos();
+    }
+
+    private void OrdenarProductos()
+    {
+        productosEnOferta = ordenSeleccionado switch
+        {
+            "precio-desc" => productosEnOferta.OrderByDescending(p => p.PorcentajeDescuento).ToList(),
+            "precio-asc" => productosEnOferta.OrderBy(p => p.PrecioOferta).ToList(),
+            "nombre-asc" => productosEnOferta.OrderBy(p => p.Nombre).ToList(),
+            _ => productosEnOferta
+        };
+    }
+
+    private async Task AgregarAlCarritoAsync(Producto producto)
+    {
+        if (producto.Stock > 0)
+        {
+            await CarritoService.AgregarAlCarritoAsync(producto);
+            producto.Stock--;
+            StateHasChanged();
+        }
+    }
+
+
+    private void ToggleFavorito(Producto producto)
+    {
+        producto.EsFavorito = !producto.EsFavorito;
+        StateHasChanged();
+    }
+}
+
+<script>
+    var myCarousel = document.querySelector('#promoCarousel');
+    var carousel = new bootstrap.Carousel(myCarousel, {
+        interval: 3000,
+        ride: 'carousel'
+    });
+</script>

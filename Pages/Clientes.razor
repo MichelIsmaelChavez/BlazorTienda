@@ -1,0 +1,245 @@
+﻿@page "/clientes"
+@using BlazorTienda.Models
+@using BlazorTienda.Services
+@inject UsuarioService UsuarioService
+@inject SesionService SesionService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold mb-0">
+            <i class="bi bi-people-fill me-2"></i> Gestión de Clientes
+        </h2>
+        <div class="badge bg-primary rounded-pill fs-6">
+            @(clientes?.Count ?? 0) clientes
+        </div>
+    </div>
+
+    @if (mostrarToast)
+    {
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+            <div class="toast show text-white bg-@tipoToast border-0 fade show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body d-flex align-items-center">
+                        <i class="bi @(tipoToast == "success" ? "bi-check-circle" : "bi-exclamation-triangle") me-2"></i>
+                        @mensajeToast
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" @onclick="() => mostrarToast = false" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (!EsAdmin)
+    {
+        <div class="alert alert-danger">
+            <i class="bi bi-shield-lock me-2"></i> Acceso restringido: Solo administradores pueden gestionar clientes
+        </div>
+    }
+    else if (clientes == null)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-3">Cargando lista de clientes...</p>
+        </div>
+    }
+    else if (!clientes.Any())
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-people text-muted" style="font-size: 3rem;"></i>
+            <h5 class="mt-3">No hay clientes registrados</h5>
+            <p class="text-muted">Actualmente no hay clientes en el sistema</p>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead style="background-color: #007bff; color: white;">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Ubicación</th>
+                                <th style="width: 150px;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var cliente in clientes)
+                            {
+                                <tr class="align-middle">
+                                    <td>
+                                        <div class="fw-semibold">@cliente.Nombre</div>
+                                    </td>
+                                    <td>@cliente.Correo</td>
+                                    <td>
+                                        <small class="text-muted">
+                                            <i class="bi bi-geo-alt"></i>
+                                            @($"{cliente.Latitud:0.0000}, {cliente.Longitud:0.0000}")
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-outline-primary"
+                                                    @onclick="() => EditarCliente(cliente)"
+                                                    title="Editar cliente">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger"
+                                                    @onclick="() => ConfirmarEliminar(cliente.Id)"
+                                                    title="Eliminar cliente">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (clienteEditando != null)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil-square me-2"></i> Editar Cliente
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="CancelarEdicion"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="clienteEditando" OnValidSubmit="GuardarEdicion">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger small" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nombre completo</label>
+                            <InputText class="form-control" @bind-Value="clienteEditando.Nombre" />
+                            <ValidationMessage For="@(() => clienteEditando.Nombre)" class="text-danger small" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Correo electrónico</label>
+                            <InputText class="form-control" @bind-Value="clienteEditando.Correo" />
+                            <ValidationMessage For="@(() => clienteEditando.Correo)" class="text-danger small" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Latitud</label>
+                                <InputNumber class="form-control" @bind-Value="clienteEditando.Latitud" />
+                                <ValidationMessage For="@(() => clienteEditando.Latitud)" class="text-danger small" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Longitud</label>
+                                <InputNumber class="form-control" @bind-Value="clienteEditando.Longitud" />
+                                <ValidationMessage For="@(() => clienteEditando.Longitud)" class="text-danger small" />
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="CancelarEdicion">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                Guardar cambios
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Usuario>? clientes;
+    private Usuario? clienteEditando;
+    private bool mostrarToast = false;
+    private string tipoToast = "success";
+    private string mensajeToast = string.Empty;
+
+    private bool EsAdmin => SesionService.UsuarioActual?.Rol == "Administrador";
+
+    protected override void OnInitialized()
+    {
+        CargarClientes();
+    }
+
+    private void CargarClientes()
+    {
+        if (EsAdmin)
+        {
+            clientes = UsuarioService.Usuarios
+                .Where(u => u.Rol == "Cliente")
+                .OrderBy(u => u.Nombre)
+                .ToList();
+        }
+    }
+
+    private void EditarCliente(Usuario cliente)
+    {
+        clienteEditando = new Usuario
+            {
+                Id = cliente.Id,
+                Nombre = cliente.Nombre,
+                Correo = cliente.Correo,
+                Contrasena = cliente.Contrasena,
+                Rol = cliente.Rol,
+                Latitud = cliente.Latitud,
+                Longitud = cliente.Longitud
+            };
+    }
+
+    private void GuardarEdicion()
+    {
+        UsuarioService.EditarUsuario(clienteEditando!);
+        clienteEditando = null;
+        CargarClientes();
+        MostrarToast("Cliente actualizado correctamente", "success");
+    }
+
+    private void CancelarEdicion()
+    {
+        clienteEditando = null;
+    }
+
+    private async Task ConfirmarEliminar(int id)
+    {
+        bool confirmar = await JS.InvokeAsync<bool>("confirm", "¿Estás seguro de eliminar este cliente?");
+        if (confirmar)
+        {
+            UsuarioService.EliminarUsuario(id);
+            CargarClientes();
+            MostrarToast("Cliente eliminado correctamente", "danger");
+        }
+    }
+
+    private void MostrarToast(string mensaje, string tipo)
+    {
+        mensajeToast = mensaje;
+        tipoToast = tipo;
+        mostrarToast = true;
+
+        var timer = new System.Timers.Timer(3000);
+        timer.Elapsed += (s, e) =>
+        {
+            mostrarToast = false;
+            InvokeAsync(StateHasChanged);
+            timer.Dispose();
+        };
+        timer.Start();
+    }
+}
+
+

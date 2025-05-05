@@ -1,0 +1,1138 @@
+﻿@page "/adminpagos"
+@using BlazorTienda.Models
+@using BlazorTienda.Services
+@inject SolicitudService SolicitudService
+@inject PagoMemoryService PagoService
+@inject UsuarioService usuarioService
+@inject IJSRuntime JS
+@inject NotificationService NotificationService
+
+<PageTitle>Administrar Pagos</PageTitle>
+
+<!-- Notificaciones -->
+@if (notificaciones.Any())
+{
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+        @foreach (var notificacion in notificaciones)
+        {
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <strong>Nuevo pago!</strong> @notificacion.Mensaje
+                <button type="button" class="btn-close" @onclick="() => CerrarNotificacion(notificacion.Id)"></button>
+            </div>
+        }
+    </div>
+}
+
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary fw-bold mb-1">
+                <i class="bi bi-cash-stack me-2"></i>Administración de Pagos
+            </h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb small">
+                    <li class="breadcrumb-item"><a href="/admin">Admin</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Pagos</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            <div class="input-group has-search" style="width: 250px;">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" class="form-control border-start-0" placeholder="Buscar..."
+                       @bind="filtroBusqueda" @oninput="() => FiltrarDatos()" />
+            </div>
+            <select class="form-select" style="width: 180px;"
+                    @bind="filtroEstado" @bind:event="onchange">
+                <option value="">Todos los estados</option>
+                <option value="Pendiente">Pendientes</option>
+                <option value="Aprobado">Aprobados</option>
+                <option value="Rechazado">Rechazados</option>
+                <option value="Completado">Completados</option>
+            </select>
+            <button class="btn btn-outline-secondary" @onclick="RecargarDatos">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Pestañas para cambiar entre vistas -->
+    <ul class="nav nav-tabs mb-4" id="pagosTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(vistaActiva == "pagos" ? "active" : "")"
+                    @onclick='() => CambiarVista("pagos")'>
+                <i class="bi bi-credit-card me-1"></i> Todos los Pagos
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(vistaActiva == "creditos" ? "active" : "")"
+                    @onclick='() => CambiarVista("creditos")'>
+                <i class="bi bi-coin me-1"></i> Créditos de Clientes
+            </button>
+        </li>
+    </ul>
+
+
+    <!-- Contenido de las pestañas -->
+    <div class="tab-content">
+        <!-- Vista de todos los pagos -->
+        <div class="tab-pane @(vistaActiva == "pagos" ? "show active" : "d-none")">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Pagos Registrados</h5>
+                        <div class="text-muted small">
+                            <span class="badge bg-warning bg-opacity-10 text-warning me-2">Pendiente</span>
+                            <span class="badge bg-success bg-opacity-10 text-success me-2">Aprobado</span>
+                            <span class="badge bg-danger bg-opacity-10 text-danger">Rechazado</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    @if (pagosPaginados.Count == 0)
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-cash-coin text-muted" style="font-size: 3rem;"></i>
+                            <h5 class="mt-3">No hay pagos registrados</h5>
+                            <p class="text-muted">Intenta ajustar los filtros o recargar los datos</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">ID</th>
+                                        <th>Cliente</th>
+                                        <th>Compra</th>
+                                        <th class="text-end">Monto</th>
+                                        <th>Método</th>
+                                        <th>Fecha</th>
+                                        <th>Estado</th>
+                                        <th class="pe-4 text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var pago in pagosPaginados)
+                                    {
+                                        <tr>
+                                            <td class="ps-4">#@pago.Id</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0 me-2">
+                                                        <div class="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center">
+                                                            <i class="bi bi-person-fill text-primary"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <div class="fw-medium">@pago.Usuario?.Nombre</div>
+                                                        <small class="text-muted">CI: @pago.Usuario?.DocumentoCliente</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>#@pago.SolicitudId</td>
+                                            <td class="text-end fw-bold">@FormatBs(pago.Monto)</td>
+                                            <td>@pago.MetodoPago</td>
+                                            <td>@pago.FechaPago.ToString("dd/MM/yyyy")</td>
+                                            <td>
+                                                <span class="badge @GetEstadoBadgeClass(pago.Estado) rounded-pill">
+                                                    @pago.Estado
+                                                </span>
+                                            </td>
+                                            <td class="pe-4 text-end">
+                                                <div class="d-flex justify-content-end gap-1">
+                                                    @if (pago.Estado == "Pendiente")
+                                                    {
+                                                        <button class="btn btn-sm btn-success"
+                                                                @onclick="() => AprobarPago(pago)"
+                                                                title="Aprobar">
+                                                            <i class="bi bi-check-lg"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-danger"
+                                                                @onclick="() => RechazarPago(pago)"
+                                                                title="Rechazar">
+                                                            <i class="bi bi-x-lg"></i>
+                                                        </button>
+                                                    }
+                                                    <button class="btn btn-sm btn-outline-primary"
+                                                            @onclick="() => MostrarDetallesPago(pago)"
+                                                            title="Ver detalles">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    @if (!string.IsNullOrEmpty(pago.ComprobanteUrl))
+                                                    {
+                                                        <a href="@pago.ComprobanteUrl" target="_blank" class="btn btn-sm btn-outline-info" title="Ver comprobante">
+                                                            <i class="bi bi-file-earmark-text"></i>
+                                                        </a>
+                                                    }
+                                                    <button class="btn btn-sm btn-outline-danger"
+                                                            @onclick="() => EliminarPago(pago)"
+                                                            title="Eliminar pago">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+
+                @if (pagosPaginados.Count > 0)
+                {
+                    <div class="card-footer bg-white border-0">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <div class="text-muted">
+                                    Mostrando <span class="fw-semibold">@((paginaActualPagos - 1) * itemsPorPagina + 1)</span> a
+                                    <span class="fw-semibold">@Math.Min(paginaActualPagos * itemsPorPagina, pagosFiltrados.Count)</span> de
+                                    <span class="fw-semibold">@pagosFiltrados.Count</span> registros
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <nav class="float-md-end">
+                                    <ul class="pagination mb-0">
+                                        <li class="page-item @(paginaActualPagos == 1 ? "disabled" : "")">
+                                            <a class="page-link" href="#" @onclick="() => CambiarPaginaPagos(paginaActualPagos - 1)">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        @for (int i = 1; i <= totalPaginasPagos; i++)
+                                        {
+                                            <li class="page-item @(i == paginaActualPagos ? "active" : "")">
+                                                <a class="page-link" href="#" @onclick="() => CambiarPaginaPagos(i)">@i</a>
+                                            </li>
+                                        }
+                                        <li class="page-item @(paginaActualPagos == totalPaginasPagos ? "disabled" : "")">
+                                            <a class="page-link" href="#" @onclick="() => CambiarPaginaPagos(paginaActualPagos + 1)">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Vista de créditos de clientes -->
+        <div class="tab-pane @(vistaActiva == "creditos" ? "show active" : "d-none")">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Créditos de Clientes</h5>
+                        <div class="text-muted small">
+                            <span class="badge bg-warning bg-opacity-10 text-warning me-2">Pendiente</span>
+                            <span class="badge bg-success bg-opacity-10 text-success">Completado</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    @if (solicitudesPaginadas.Count == 0)
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-check2-circle text-muted" style="font-size: 3rem;"></i>
+                            <h3 class="mt-3">No hay créditos registrados</h3>
+                            <p class="text-muted mb-4">No se encontraron créditos con los filtros actuales</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Cliente</th>
+                                        <th>Productos</th>
+                                        <th class="text-end">Total</th>
+                                        <th class="text-end">Pagado</th>
+                                        <th class="text-end">Pendiente</th>
+                                        <th class="text-end">Cuota</th>
+                                        <th>Estado</th>
+                                        <th class="pe-4 text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var solicitud in solicitudesPaginadas.OrderByDescending(s => s.FechaAprobacion))
+                                    {
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center">
+                                                        <i class="bi bi-person-fill text-primary"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-medium">@solicitud.Usuario?.Nombre</div>
+                                                        <small class="text-muted">CI: @solicitud.DocumentoCliente</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    @foreach (var producto in solicitud.Productos.Take(2))
+                                                    {
+                                                        <div class="d-flex align-items-center gap-1">
+                                                            <img src="@GetImageUrl(producto.ImagenUrl)"
+                                                                 alt="@producto.Nombre"
+                                                                 style="width:40px; height:40px; object-fit:cover;"
+                                                                 class="rounded border"
+                                                                 onerror="this.onerror=null;this.src='/img/placeholder.png'" />
+                                                            <small>@producto.Nombre</small>
+                                                        </div>
+                                                    }
+                                                    @if (solicitud.Productos.Count > 2)
+                                                    {
+                                                        <span class="badge bg-primary rounded-pill">+@(solicitud.Productos.Count - 2)</span>
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td class="text-end fw-bold">@FormatBs(solicitud.MontoTotal)</td>
+                                            <td class="text-end">@FormatBs(solicitud.MontoPagado)</td>
+                                            <td class="text-end fw-bold @(solicitud.MontoPendiente > 0 ? "text-danger" : "text-success")">
+                                                @FormatBs(solicitud.MontoPendiente)
+                                            </td>
+                                            <td class="text-end">@FormatBs(solicitud.CuotaMensual)</td>
+                                            <td>
+                                                <span class="badge @GetSolicitudBadgeClass(solicitud) rounded-pill">
+                                                    @GetSolicitudStatusText(solicitud)
+                                                </span>
+                                            </td>
+                                            <td class="pe-4 text-center">
+                                                <div class="d-flex justify-content-center gap-1">
+                                                    <button class="btn btn-sm btn-outline-primary" @onclick="() => MostrarDetallesSolicitud(solicitud)">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-info" @onclick="() => MostrarHistorialPagos(solicitud)">
+                                                        <i class="bi bi-clock-history"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger"
+                                                            @onclick="() => EliminarSolicitud(solicitud)"
+                                                            title="Eliminar crédito">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+
+                @if (solicitudesPaginadas.Count > 0)
+                {
+                    <div class="card-footer bg-white border-0">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <div class="text-muted">
+                                    Mostrando <span class="fw-semibold">@((paginaActualCreditos - 1) * itemsPorPaginaCreditos + 1)</span> a
+                                    <span class="fw-semibold">@Math.Min(paginaActualCreditos * itemsPorPaginaCreditos, solicitudesFiltradas.Count)</span> de
+                                    <span class="fw-semibold">@solicitudesFiltradas.Count</span> registros
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <nav class="float-md-end">
+                                    <ul class="pagination mb-0">
+                                        <li class="page-item @(paginaActualCreditos == 1 ? "disabled" : "")">
+                                            <a class="page-link" href="#" @onclick="() => CambiarPaginaCreditos(paginaActualCreditos - 1)">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        @for (int i = 1; i <= totalPaginasCreditos; i++)
+                                        {
+                                            <li class="page-item @(i == paginaActualCreditos ? "active" : "")">
+                                                <a class="page-link" href="#" @onclick="() => CambiarPaginaCreditos(i)">@i</a>
+                                            </li>
+                                        }
+                                        <li class="page-item @(paginaActualCreditos == totalPaginasCreditos ? "disabled" : "")">
+                                            <a class="page-link" href="#" @onclick="() => CambiarPaginaCreditos(paginaActualCreditos + 1)">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Detalles de Pago -->
+@if (mostrarDetallesPagoModal && pagoSeleccionado != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">
+                        <i class="bi bi-cash-coin me-2"></i>Detalles de Pago #@pagoSeleccionado.Id
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="CerrarDetallesPagoModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-white">
+                                    <h6 class="mb-0"><i class="bi bi-person me-2"></i>Información del Cliente</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Nombre completo</label>
+                                        <div class="fw-medium">@pagoSeleccionado.Usuario?.Nombre</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Documento</label>
+                                        <div>@pagoSeleccionado.Usuario?.DocumentoCliente</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Celular</label>
+                                        <div>@pagoSeleccionado.Usuario?.CelularCliente</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-white">
+                                    <h6 class="mb-0"><i class="bi bi-credit-card me-2"></i>Detalles del Pago</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Estado</label>
+                                        <div>
+                                            <span class="badge @GetEstadoBadgeClass(pagoSeleccionado.Estado) rounded-pill">
+                                                @pagoSeleccionado.Estado
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Fecha</label>
+                                        <div>@pagoSeleccionado.FechaPago.ToString("dd/MM/yyyy HH:mm")</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Método</label>
+                                        <div>@pagoSeleccionado.MetodoPago</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Monto</label>
+                                        <div class="h4 fw-bold text-primary">@FormatBs(pagoSeleccionado.Monto)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h6 class="mb-0"><i class="bi bi-cart me-2"></i>Información de la Compra</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label small text-muted mb-1">Compra #</label>
+                                <div>@pagoSeleccionado.SolicitudId</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-muted mb-1">Total crédito</label>
+                                <div>@FormatBs(pagoSeleccionado.Solicitud?.MontoTotal ?? 0)</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-muted mb-1">Pagado</label>
+                                <div>@FormatBs(pagoSeleccionado.Solicitud?.MontoPagado ?? 0)</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-muted mb-1">Pendiente</label>
+                                <div class="@(pagoSeleccionado.Solicitud?.MontoPendiente > 0 ? "text-danger fw-bold" : "text-success")">
+                                    @FormatBs(pagoSeleccionado.Solicitud?.MontoPendiente ?? 0)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(pagoSeleccionado.ComprobanteUrl))
+                    {
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white">
+                                <h6 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Comprobante de Pago</h6>
+                            </div>
+                            <div class="card-body text-center">
+                                <img src="@pagoSeleccionado.ComprobanteUrl"
+                                     alt="Comprobante de pago"
+                                     class="img-fluid rounded border"
+                                     style="max-height: 400px;" />
+                                <div class="mt-3">
+                                    <a href="@pagoSeleccionado.ComprobanteUrl" target="_blank" class="btn btn-outline-primary">
+                                        <i class="bi bi-download me-1"></i>Descargar comprobante
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer border-0">
+                    @if (pagoSeleccionado.Estado == "Pendiente")
+                    {
+                        <button class="btn btn-success me-2" @onclick="() => AprobarPago(pagoSeleccionado)">
+                            <i class="bi bi-check-lg me-1"></i> Aprobar
+                        </button>
+                        <button class="btn btn-danger me-2" @onclick="() => RechazarPago(pagoSeleccionado)">
+                            <i class="bi bi-x-lg me-1"></i> Rechazar
+                        </button>
+                    }
+                    <button class="btn btn-sm btn-outline-danger me-2" @onclick="() => EliminarPago(pagoSeleccionado)">
+                        <i class="bi bi-trash me-1"></i> Eliminar
+                    </button>
+                    <button class="btn btn-secondary" @onclick="CerrarDetallesPagoModal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal de Detalles de Solicitud -->
+@if (mostrarDetallesSolicitudModal && solicitudSeleccionada != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5;">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">
+                        <i class="bi bi-receipt me-2"></i>Detalles de Compra #@solicitudSeleccionada.Id
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="CerrarDetallesSolicitudModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-white">
+                                    <h6 class="mb-0"><i class="bi bi-person me-2"></i>Información del Cliente</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Nombre completo</label>
+                                        <div class="fw-medium">@solicitudSeleccionada.Usuario?.Nombre</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Documento</label>
+                                        <div>@solicitudSeleccionada.DocumentoCliente</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Celular</label>
+                                        <div>@solicitudSeleccionada.CelularCliente</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Trabajo</label>
+                                        <div>@solicitudSeleccionada.TrabajoCliente</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-white">
+                                    <h6 class="mb-0"><i class="bi bi-credit-card me-2"></i>Resumen Financiero</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Estado</label>
+                                        <div>
+                                            <span class="badge @GetSolicitudBadgeClass(solicitudSeleccionada) rounded-pill">
+                                                @GetSolicitudStatusText(solicitudSeleccionada)
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Fecha aprobación</label>
+                                        <div>@solicitudSeleccionada.FechaAprobacion.ToString("dd/MM/yyyy")</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Total crédito</label>
+                                        <div class="fw-bold">@FormatBs(solicitudSeleccionada.MontoTotal)</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Pagado</label>
+                                        <div class="text-success fw-bold">@FormatBs(solicitudSeleccionada.MontoPagado)</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Pendiente</label>
+                                        <div class="text-danger fw-bold">@FormatBs(solicitudSeleccionada.MontoPendiente)</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">Valor cuota</label>
+                                        <div>@FormatBs(solicitudSeleccionada.CuotaMensual)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h6 class="mb-0"><i class="bi bi-cart me-2"></i>Productos</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 60px;"></th>
+                                            <th>Producto</th>
+                                            <th class="text-end">Precio</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-end">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var producto in solicitudSeleccionada.Productos)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <img src="@GetImageUrl(producto.ImagenUrl)"
+                                                         alt="@producto.Nombre"
+                                                         style="width:50px; height:50px; object-fit:cover;"
+                                                         class="rounded border"
+                                                         onerror="this.onerror=null;this.src='/img/placeholder.png'" />
+                                                </td>
+                                                <td>
+                                                    <div class="fw-medium">@producto.Nombre</div>
+                                                    <small class="text-muted">SKU: @(producto.Sku ?? "N/A")</small>
+                                                </td>
+                                                <td class="text-end">@FormatBs(producto.PrecioUnitario)</td>
+                                                <td class="text-center">@producto.Cantidad</td>
+                                                <td class="text-end fw-bold">@FormatBs(producto.PrecioUnitario * producto.Cantidad)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot class="table-light">
+                                        <tr>
+                                            <td colspan="4" class="text-end fw-bold">Total:</td>
+                                            <td class="text-end fw-bold text-primary">@FormatBs(solicitudSeleccionada.MontoTotal)</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button class="btn btn-sm btn-outline-danger me-2" @onclick="() => EliminarSolicitud(solicitudSeleccionada)">
+                        <i class="bi bi-trash me-1"></i> Eliminar
+                    </button>
+                    <button type="button" class="btn btn-secondary" @onclick="CerrarDetallesSolicitudModal">
+                        <i class="bi bi-x-lg me-2"></i>Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal de Historial de Pagos -->
+@if (mostrarHistorialPagosModal && solicitudSeleccionada != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">
+                        <i class="bi bi-clock-history me-2"></i>Historial de Pagos - Compra #@solicitudSeleccionada.Id
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="CerrarHistorialPagosModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th class="text-end">Monto</th>
+                                            <th>Método</th>
+                                            <th>Estado</th>
+                                            <th class="text-center">Comprobante</th>
+                                            <th class="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var pago in solicitudSeleccionada.Pagos.OrderByDescending(p => p.FechaPago))
+                                        {
+                                            <tr>
+                                                <td>@pago.FechaPago.ToString("dd/MM/yyyy")</td>
+                                                <td class="text-end fw-bold">@FormatBs(pago.Monto)</td>
+                                                <td>@pago.MetodoPago</td>
+                                                <td>
+                                                    <span class="badge @GetEstadoBadgeClass(pago.Estado) rounded-pill">
+                                                        @pago.Estado
+                                                    </span>
+                                                </td>
+                                                <td class="text-center">
+                                                    @if (!string.IsNullOrEmpty(pago.ComprobanteUrl))
+                                                    {
+                                                        <a href="@pago.ComprobanteUrl" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                            <i class="bi bi-download"></i>
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">N/A</span>
+                                                    }
+                                                </td>
+                                                <td class="text-end">
+                                                    @if (pago.Estado == "Pendiente")
+                                                    {
+                                                        <button class="btn btn-sm btn-success me-1" @onclick="() => AprobarPago(pago)">
+                                                            <i class="bi bi-check-lg"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-danger me-1" @onclick="() => RechazarPago(pago)">
+                                                            <i class="bi bi-x-lg"></i>
+                                                        </button>
+                                                    }
+                                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => EliminarPago(pago)">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" @onclick="CerrarHistorialPagosModal">
+                        <i class="bi bi-x-lg me-2"></i>Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    // Variables para la vista de pagos
+    private List<Pago> pagos = new();
+    private List<Pago> pagosFiltrados = new();
+    private List<Pago> pagosPaginados = new();
+    private Pago? pagoSeleccionado = null;
+    private bool mostrarDetallesPagoModal = false;
+
+    // Variables para la vista de créditos
+    private List<Solicitud> solicitudes = new();
+    private List<Solicitud> solicitudesFiltradas = new();
+    private List<Solicitud> solicitudesPaginadas = new();
+    private Solicitud? solicitudSeleccionada = null;
+    private bool mostrarDetallesSolicitudModal = false;
+    private bool mostrarHistorialPagosModal = false;
+
+    // Variables para notificaciones
+    private List<Notificacion> notificaciones = new();
+    private Timer? notificacionTimer;
+    private int notificacionIdCounter = 1;
+
+    // Variables compartidas
+    private string filtroBusqueda = string.Empty;
+    private string filtroEstado = string.Empty;
+    private string vistaActiva = "pagos"; // "pagos" o "creditos"
+
+    // Paginación para pagos
+    private int paginaActualPagos = 1;
+    private int itemsPorPagina = 10;
+    private int totalPaginasPagos = 1;
+
+    // Paginación para créditos
+    private int paginaActualCreditos = 1;
+    private int itemsPorPaginaCreditos = 10;
+    private int totalPaginasCreditos = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarDatos();
+        ConfigurarNotificaciones();
+    }
+
+    public void Dispose()
+    {
+        notificacionTimer?.Dispose();
+    }
+
+    private void ConfigurarNotificaciones()
+    {
+        notificacionTimer = new Timer(async _ =>
+        {
+            await VerificarNuevosPagos();
+            await InvokeAsync(StateHasChanged);
+        }, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+    }
+
+    private async Task VerificarNuevosPagos()
+    {
+        try
+        {
+            // Obtener pagos pendientes recientes (últimos 5 minutos)
+            var pagosRecientes = await PagoService.ObtenerPagosRecientesAsync(DateTime.Now.AddMinutes(-5));
+
+            foreach (var pago in pagosRecientes.Where(p => p.Estado == "Pendiente"))
+            {
+                var usuario = pago.Usuario ?? await usuarioService.ObtenerUsuarioPorIdAsync(pago.UsuarioId);
+                var mensaje = $"{usuario?.Nombre} (CI: {usuario?.DocumentoCliente}) quiere pagar Bs. {pago.Monto.ToString("N2")}";
+
+                if (!notificaciones.Any(n => n.Mensaje == mensaje))
+                {
+                    notificaciones.Insert(0, new Notificacion
+                        {
+                            Id = notificacionIdCounter++,
+                            Mensaje = mensaje
+                        });
+
+                    // Reproducir sonido de notificación
+                    await JS.InvokeVoidAsync("playNotificationSound");
+
+                    // Limitar a 5 notificaciones máximo
+                    if (notificaciones.Count > 5)
+                    {
+                        notificaciones.RemoveAt(notificaciones.Count - 1);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al verificar nuevos pagos: {ex.Message}");
+        }
+    }
+
+    private void CerrarNotificacion(int id)
+    {
+        notificaciones.RemoveAll(n => n.Id == id);
+    }
+
+    private async Task CargarDatos()
+    {
+        await CargarPagos();
+        await CargarSolicitudes();
+    }
+
+    private async Task CargarPagos()
+    {
+        pagos = await PagoService.ObtenerTodosPagosAsync();
+
+        // Cargar relaciones
+        foreach (var pago in pagos)
+        {
+            if (pago.Usuario == null && pago.UsuarioId > 0)
+            {
+                pago.Usuario = await usuarioService.ObtenerUsuarioPorIdAsync(pago.UsuarioId);
+            }
+            if (pago.Solicitud == null && pago.SolicitudId > 0)
+            {
+                pago.Solicitud = await SolicitudService.ObtenerSolicitudPorIdAsync(pago.SolicitudId);
+            }
+        }
+
+        FiltrarPagos();
+    }
+
+    private async Task CargarSolicitudes()
+    {
+        var todasSolicitudes = await SolicitudService.ObtenerTodasSolicitudesAsync();
+
+        // Filtrar por estado si está seleccionado
+        if (!string.IsNullOrEmpty(filtroEstado))
+        {
+            solicitudes = todasSolicitudes
+                .Where(s => s.Estado == filtroEstado ||
+                          (filtroEstado == "Completado" && s.Estado == "Aprobado" && s.MontoPendiente <= 0))
+                .ToList();
+        }
+        else
+        {
+            // Mostrar solo aprobadas por defecto
+            solicitudes = todasSolicitudes
+                .Where(s => s.Estado == "Aprobado")
+                .ToList();
+        }
+
+        // Cargar información de usuario y pagos para cada solicitud
+        foreach (var solicitud in solicitudes)
+        {
+            if (solicitud.Usuario == null && solicitud.UsuarioId > 0)
+            {
+                solicitud.Usuario = await usuarioService.ObtenerUsuarioPorIdAsync(solicitud.UsuarioId);
+            }
+
+            if (solicitud.Pagos == null || solicitud.Pagos.Count == 0)
+            {
+                solicitud.Pagos = await PagoService.ObtenerPagosPorSolicitudAsync(solicitud.Id);
+            }
+        }
+
+        FiltrarSolicitudes();
+    }
+
+    private void FiltrarDatos()
+    {
+        if (vistaActiva == "pagos")
+        {
+            FiltrarPagos();
+        }
+        else
+        {
+            FiltrarSolicitudes();
+        }
+    }
+
+    private void FiltrarPagos()
+    {
+        var query = pagos.AsQueryable();
+
+        if (!string.IsNullOrEmpty(filtroEstado))
+        {
+            query = query.Where(p => p.Estado == filtroEstado);
+        }
+
+        if (!string.IsNullOrEmpty(filtroBusqueda))
+        {
+            var busqueda = filtroBusqueda.ToLower();
+            query = query.Where(p =>
+                (p.Usuario != null && p.Usuario.Nombre.ToLower().Contains(busqueda)) ||
+                (p.Usuario != null && p.Usuario.DocumentoCliente.ToLower().Contains(busqueda)) ||
+                p.MetodoPago.ToLower().Contains(busqueda) ||
+                p.Id.ToString().Contains(busqueda) ||
+                p.SolicitudId.ToString().Contains(busqueda)
+            );
+        }
+
+        pagosFiltrados = query.OrderByDescending(p => p.FechaPago).ToList();
+        totalPaginasPagos = (int)Math.Ceiling((double)pagosFiltrados.Count / itemsPorPagina);
+        CambiarPaginaPagos(1);
+    }
+
+    private void FiltrarSolicitudes()
+    {
+        var query = solicitudes.AsQueryable();
+
+        if (!string.IsNullOrEmpty(filtroBusqueda))
+        {
+            var busqueda = filtroBusqueda.ToLower();
+            query = query.Where(s =>
+                (s.Usuario != null && s.Usuario.Nombre.ToLower().Contains(busqueda)) ||
+                s.DocumentoCliente.ToLower().Contains(busqueda) ||
+                s.Id.ToString().Contains(busqueda)
+            );
+        }
+
+        solicitudesFiltradas = query.ToList();
+        totalPaginasCreditos = (int)Math.Ceiling((double)solicitudesFiltradas.Count / itemsPorPaginaCreditos);
+        CambiarPaginaCreditos(1);
+    }
+
+    private void CambiarPaginaPagos(int pagina)
+    {
+        paginaActualPagos = Math.Clamp(pagina, 1, totalPaginasPagos);
+        var skip = (paginaActualPagos - 1) * itemsPorPagina;
+        pagosPaginados = pagosFiltrados
+            .Skip(skip)
+            .Take(itemsPorPagina)
+            .ToList();
+    }
+
+    private void CambiarPaginaCreditos(int pagina)
+    {
+        paginaActualCreditos = Math.Clamp(pagina, 1, totalPaginasCreditos);
+        var skip = (paginaActualCreditos - 1) * itemsPorPaginaCreditos;
+        solicitudesPaginadas = solicitudesFiltradas
+            .Skip(skip)
+            .Take(itemsPorPaginaCreditos)
+            .ToList();
+    }
+
+    private void CambiarVista(string vista)
+    {
+        vistaActiva = vista;
+        FiltrarDatos();
+    }
+
+    private async Task RecargarDatos()
+    {
+        await CargarDatos();
+    }
+
+    private string FormatBs(decimal monto)
+    {
+        return $"Bs. {monto.ToString("N2")}";
+    }
+
+    private string GetImageUrl(string? imageUrl)
+    {
+        if (string.IsNullOrEmpty(imageUrl)) return "/img/placeholder.png";
+        if (imageUrl.StartsWith("http")) return imageUrl;
+        return imageUrl.StartsWith("/") ? imageUrl : $"/{imageUrl.TrimStart('/')}";
+    }
+
+    private string GetEstadoBadgeClass(string estado)
+    {
+        return estado switch
+        {
+            "Pendiente" => "bg-warning bg-opacity-10 text-warning",
+            "Aprobado" => "bg-success bg-opacity-10 text-success",
+            "Rechazado" => "bg-danger bg-opacity-10 text-danger",
+            _ => "bg-secondary bg-opacity-10 text-secondary"
+        };
+    }
+
+    private string GetSolicitudBadgeClass(Solicitud solicitud)
+    {
+        if (solicitud.Estado != "Aprobado")
+            return "bg-secondary bg-opacity-10 text-secondary";
+
+        return solicitud.MontoPendiente > 0 ?
+            "bg-warning bg-opacity-10 text-warning" :
+            "bg-success bg-opacity-10 text-success";
+    }
+
+    private string GetSolicitudStatusText(Solicitud solicitud)
+    {
+        if (solicitud.Estado != "Aprobado")
+            return solicitud.Estado;
+
+        return solicitud.MontoPendiente > 0 ? "Pendiente" : "Completado";
+    }
+
+    private async Task AprobarPago(Pago pago)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", $"¿Aprobar pago de {pago.Usuario?.Nombre} por Bs. {pago.Monto.ToString("N2")}?"))
+        {
+            pago.Estado = "Aprobado";
+            await PagoService.ActualizarPagoAsync(pago);
+
+            // Actualizar el monto pagado en la solicitud
+            var solicitud = await SolicitudService.ObtenerSolicitudPorIdAsync(pago.SolicitudId);
+            if (solicitud != null)
+            {
+                solicitud.MontoPagado = solicitud.Pagos
+                    .Where(p => p.Estado == "Aprobado")
+                    .Sum(p => p.Monto);
+
+                await SolicitudService.ActualizarSolicitudAsync(solicitud);
+            }
+
+            await CargarDatos();
+            StateHasChanged();
+        }
+    }
+
+    private async Task RechazarPago(Pago pago)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", $"¿Rechazar pago de {pago.Usuario?.Nombre} por Bs. {pago.Monto.ToString("N2")}?"))
+        {
+            pago.Estado = "Rechazado";
+            await PagoService.ActualizarPagoAsync(pago);
+
+            // Actualizar el monto pagado en la solicitud
+            var solicitud = await SolicitudService.ObtenerSolicitudPorIdAsync(pago.SolicitudId);
+            if (solicitud != null)
+            {
+                solicitud.MontoPagado = solicitud.Pagos
+                    .Where(p => p.Estado == "Aprobado")
+                    .Sum(p => p.Monto);
+
+                await SolicitudService.ActualizarSolicitudAsync(solicitud);
+            }
+
+            await CargarDatos();
+            StateHasChanged();
+        }
+    }
+
+    private async Task EliminarPago(Pago pago)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", $"¿Estás seguro de eliminar este pago de {pago.Usuario?.Nombre} por Bs. {pago.Monto.ToString("N2")}?"))
+        {
+            await PagoService.EliminarPagoAsync(pago.Id);
+
+            // Actualizar el monto pagado en la solicitud si el pago estaba aprobado
+            if (pago.Estado == "Aprobado" && pago.SolicitudId > 0)
+            {
+                var solicitud = await SolicitudService.ObtenerSolicitudPorIdAsync(pago.SolicitudId);
+                if (solicitud != null)
+                {
+                    solicitud.MontoPagado = solicitud.Pagos
+                        .Where(p => p.Estado == "Aprobado" && p.Id != pago.Id)
+                        .Sum(p => p.Monto);
+
+                    await SolicitudService.ActualizarSolicitudAsync(solicitud);
+                }
+            }
+
+            await CargarDatos();
+            StateHasChanged();
+        }
+    }
+
+    private async Task EliminarSolicitud(Solicitud solicitud)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", $"¿Estás seguro de eliminar esta solicitud de crédito de {solicitud.Usuario?.Nombre} por Bs. {solicitud.MontoTotal.ToString("N2")}?\n\n¡Esta acción no se puede deshacer!"))
+        {
+            await SolicitudService.EliminarSolicitudAsync(solicitud.Id);
+            await CargarDatos();
+            StateHasChanged();
+        }
+    }
+
+    private void MostrarDetallesPago(Pago pago)
+    {
+        pagoSeleccionado = pago;
+        mostrarDetallesPagoModal = true;
+    }
+
+    private void CerrarDetallesPagoModal()
+    {
+        mostrarDetallesPagoModal = false;
+        pagoSeleccionado = null;
+    }
+
+    private void MostrarDetallesSolicitud(Solicitud solicitud)
+    {
+        solicitudSeleccionada = solicitud;
+        mostrarDetallesSolicitudModal = true;
+    }
+
+    private void CerrarDetallesSolicitudModal()
+    {
+        mostrarDetallesSolicitudModal = false;
+        solicitudSeleccionada = null;
+    }
+
+    private void MostrarHistorialPagos(Solicitud solicitud)
+    {
+        solicitudSeleccionada = solicitud;
+        mostrarHistorialPagosModal = true;
+    }
+
+    private void CerrarHistorialPagosModal()
+    {
+        mostrarHistorialPagosModal = false;
+        solicitudSeleccionada = null;
+    }
+
+    public class Notificacion
+    {
+        public int Id { get; set; }
+        public string Mensaje { get; set; } = string.Empty;
+        public DateTime Fecha { get; set; } = DateTime.Now;
+    }
+}

@@ -1,0 +1,259 @@
+﻿@page "/dashboard"
+@using BlazorTienda.Models
+@using BlazorTienda.Services
+@inject ProductoService ProductoService
+@inject CategoriaService CategoriaService
+@inject SesionService SesionService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold mb-0">
+            <i class="bi bi-speedometer2 me-2"></i> Panel de Control
+        </h2>
+        <div class="text-muted">
+            <i class="bi bi-calendar me-1"></i> @DateTime.Now.ToString("dddd, dd MMMM yyyy")
+        </div>
+    </div>
+
+    @if (!SesionService.TieneAccesoAdmin())
+    {
+        <div class="alert alert-danger">
+            <i class="bi bi-shield-lock me-2"></i> Acceso restringido: Solo administradores pueden ver este panel
+        </div>
+    }
+    else
+    {
+        <!-- Tarjetas de Resumen -->
+        <div class="row g-4 mb-4">
+            <!-- Total Productos -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">Total Productos</h6>
+                                <h3 class="mb-0">@ProductoService.Productos.Count()</h3>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-3">
+                                <i class="bi bi-box-seam text-primary" style="font-size: 1.5rem;"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <span class="text-success fw-semibold">
+                                <i class="bi bi-arrow-up"></i> 5.2%
+                            </span>
+                            <span class="text-muted ms-2">vs último mes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Categorías -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">Total Categorías</h6>
+                                <h3 class="mb-0">@CategoriaService.Categorias.Count()</h3>
+                            </div>
+                            <div class="bg-success bg-opacity-10 p-3 rounded-3">
+                                <i class="bi bi-tags text-success" style="font-size: 1.5rem;"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <span class="text-success fw-semibold">
+                                <i class="bi bi-arrow-up"></i> 2.1%
+                            </span>
+                            <span class="text-muted ms-2">vs último mes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Total -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">Stock Total</h6>
+                                <h3 class="mb-0">@ProductoService.Productos.Sum(p => p.Stock)</h3>
+                            </div>
+                            <div class="bg-info bg-opacity-10 p-3 rounded-3">
+                                <i class="bi bi-boxes text-info" style="font-size: 1.5rem;"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <span class="text-danger fw-semibold">
+                                <i class="bi bi-arrow-down"></i> 3.8%
+                            </span>
+                            <span class="text-muted ms-2">vs último mes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Precio Promedio -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">Precio Promedio</h6>
+                                <h3 class="mb-0">
+                                    @((ProductoService.Productos.Any())
+                                        ? $"Bs. {ProductoService.Productos.Average(p => p.Precio):N2}"
+                                        : "Bs. 0.00")
+                                </h3>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 p-3 rounded-3">
+                                <i class="bi bi-currency-dollar text-warning" style="font-size: 1.5rem;"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <span class="text-success fw-semibold">
+                                <i class="bi bi-arrow-up"></i> 1.5%
+                            </span>
+                            <span class="text-muted ms-2">vs último mes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos y Tablas -->
+        <div class="row g-4">
+            <!-- Productos por Categoría -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-pie-chart me-2"></i> Productos por Categoría
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="categoriasChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Últimos Productos -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-box-seam me-2"></i> Últimos Productos
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Categoría</th>
+                                        <th>Stock</th>
+                                        <th>Precio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var producto in ProductoService.Productos.OrderByDescending(p => p.Id).Take(5))
+                                    {
+                                        <tr>
+                                            <td>@producto.Nombre</td>
+                                            <td><span class="badge bg-info">@producto.Categoria</span></td>
+                                            <td>
+                                                <span class="badge @(producto.Stock > 0 ? "bg-success" : "bg-danger")">
+                                                    @producto.Stock
+                                                </span>
+                                            </td>
+                                            <td>Bs. @producto.Precio.ToString("N2")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Categorías -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-tags me-2"></i> Distribución por Categorías
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Categoría</th>
+                                        <th>Cantidad de Productos</th>
+                                        <th>Porcentaje</th>
+                                        <th>Stock Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cat in CategoriaService.Categorias)
+                                    {
+                                        var productosCat = ProductoService.Productos.Where(p => p.Categoria == cat.Nombre).ToList();
+                                        var porcentaje = CategoriaService.Categorias.Count > 0 ?
+                                        (double)productosCat.Count / ProductoService.Productos.Count * 100 : 0;
+
+                                        <tr>
+                                            <td>@cat.Nombre</td>
+                                            <td>@productosCat.Count</td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar bg-primary" role="progressbar"
+                                                         style="width: @porcentaje%;"
+                                                         aria-valuenow="@porcentaje"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                        @porcentaje.ToString("N1")%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>@productosCat.Sum(p => p.Stock)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        if (!SesionService.TieneAccesoAdmin())
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && SesionService.TieneAccesoAdmin())
+        {
+            await JS.InvokeVoidAsync("renderDashboardCharts",
+                CategoriaService.Categorias.Select(c => c.Nombre).ToArray(),
+                CategoriaService.Categorias.Select(c =>
+                    ProductoService.Productos.Count(p => p.Categoria == c.Nombre)).ToArray());
+        }
+    }
+}
